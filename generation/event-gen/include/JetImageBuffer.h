@@ -57,7 +57,7 @@ class JetImageBuffer {
 
     // Tree Vars ---------------------------------------
     int evt_number;
-    int fTNPV;
+    int m_NPV;
 
     void SetupInt(int &val, TString name);
     void SetupFloat(float &val, TString name);
@@ -74,58 +74,58 @@ class JetImageBuffer {
 
     int MaxN;
 
-    int fTNFilled;
+    int m_NFilled;
 
-    float fTLeadingEta;
-    float fTLeadingPhi;
-    float fTLeadingPt;
-    float fTLeadingM;
+    float m_LeadingEta;
+    float m_LeadingPhi;
+    float m_LeadingPt;
+    float m_LeadingM;
 
-    float fTLeadingEta_nopix;
-    float fTLeadingPhi_nopix;
-    float fTLeadingPt_nopix;
-    float fTLeadingM_nopix;
+    float m_LeadingEta_nopix;
+    float m_LeadingPhi_nopix;
+    float m_LeadingPt_nopix;
+    float m_LeadingM_nopix;
 
-    float fTSubLeadingEta;
-    float fTSubLeadingPhi;
+    float m_SubLeadingEta;
+    float m_SubLeadingPhi;
 
-    float fTPCEta;
-    float fTPCPhi;
+    float m_PCEta;
+    float m_PCPhi;
 
-    // float fTRotationAngle;
+    // float m_RotationAngle;
 
-    float fTTau1;
-    float fTTau2;
-    float fTTau3;
+    float m_Tau1;
+    float m_Tau2;
+    float m_Tau3;
 
-    float fTTau21;
-    float fTTau32;
+    float m_Tau21;
+    float m_Tau32;
 
-    float fTTau1_nopix;
-    float fTTau2_nopix;
-    float fTTau3_nopix;
+    float m_Tau1_nopix;
+    float m_Tau2_nopix;
+    float m_Tau3_nopix;
 
-    float fTTau21_nopix;
-    float fTTau32_nopix;
+    float m_Tau21_nopix;
+    float m_Tau32_nopix;
 
-    float fTdeltaR;
+    float m_deltaR;
 
-    // float fTTau21old;
-    // float fTTau32old;
+    // float m_Tau21old;
+    // float m_Tau32old;
 
-    float *fTIntensity;
-    // float *fTRotatedIntensity;
-    // float *fTLocalDensity;
-    // float *fTGlobalDensity;
+    float *m_Intensity;
+    // float *m_RotatedIntensity;
+    // float *m_LocalDensity;
+    // float *m_GlobalDensity;
 
-    // float fTPt [MaxN];
-    // double fTEta [MaxN];
-    // double fTPhi [MaxN];
+    // float m_Pt [MaxN];
+    // double m_Eta [MaxN];
+    // double m_Phi [MaxN];
 
-    // float fTIntensity[MaxN];
-    // float fTRotatedIntensity[MaxN];
-    // int  fTPixx[MaxN];
-    // int  fTPixy[MaxN];
+    // float m_Intensity[MaxN];
+    // float m_RotatedIntensity[MaxN];
+    // int  m_Pixx[MaxN];
+    // int  m_Pixy[MaxN];
 };
 
 #endif

@@ -44,7 +44,7 @@ double euclidean_distance(const point &x, const point &y) {
 JetImageBuffer::JetImageBuffer(int imagesize) {
     imagesize *= imagesize;
     MaxN = imagesize;
-    fTIntensity = new float[imagesize];
+    m_Intensity = new float[imagesize];
     if (fDebug) {
         cout << "JetImageBuffer::JetImageBuffer Start " << endl;
     }
@@ -71,7 +71,7 @@ JetImageBuffer::JetImageBuffer(int imagesize) {
 // Destructor
 JetImageBuffer::~JetImageBuffer() {
     delete tool;
-    delete[] fTIntensity;
+    delete[] m_Intensity;
 }
 
 // Begin method
@@ -182,25 +182,25 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     fastjet::PseudoJet leading_jet = trimmer(considered_jets[0]);
     fastjet::PseudoJet leading_jet_nopix = trimmer(considered_jets_nopix[0]);
 
-    fTLeadingEta = leading_jet.eta();
-    fTLeadingPhi = leading_jet.phi();
-    fTLeadingPt = leading_jet.perp();
-    fTLeadingM = leading_jet.m();
-    fTLeadingEta_nopix = leading_jet_nopix.eta();
-    fTLeadingPhi_nopix = leading_jet_nopix.phi();
-    fTLeadingPt_nopix = leading_jet_nopix.perp();
-    fTLeadingM_nopix = leading_jet_nopix.m();
+    m_LeadingEta = leading_jet.eta();
+    m_LeadingPhi = leading_jet.phi();
+    m_LeadingPt = leading_jet.perp();
+    m_LeadingM = leading_jet.m();
+    m_LeadingEta_nopix = leading_jet_nopix.eta();
+    m_LeadingPhi_nopix = leading_jet_nopix.phi();
+    m_LeadingPt_nopix = leading_jet_nopix.perp();
+    m_LeadingM_nopix = leading_jet_nopix.m();
 
-    fTdeltaR = 0.;
+    m_deltaR = 0.;
     if (leading_jet.pieces().size() > 1) {
         vector<fastjet::PseudoJet> subjets = leading_jet.pieces();
         TLorentzVector l(subjets[0].px(), subjets[0].py(), subjets[0].pz(),
                          subjets[0].E());
         TLorentzVector sl(subjets[1].px(), subjets[1].py(), subjets[1].pz(),
                           subjets[1].E());
-        fTdeltaR = l.DeltaR(sl);
-        fTSubLeadingEta = sl.Eta() - l.Eta();
-        fTSubLeadingPhi = subjets[1].delta_phi_to(subjets[0]);
+        m_deltaR = l.DeltaR(sl);
+        m_SubLeadingEta = sl.Eta() - l.Eta();
+        m_SubLeadingPhi = subjets[1].delta_phi_to(subjets[0]);
     }
 
     vector<pair<double, double>> consts_image;
@@ -297,8 +297,8 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
         dir_y = -dir_y;
     }
 
-    fTPCEta = dir_x;
-    fTPCPhi = dir_y;
+    m_PCEta = dir_x;
+    m_PCPhi = dir_y;
 
     // Doing a little check to see how often the PC points in the direction of
     // the
@@ -377,8 +377,8 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     // Step 3: Rotate so the subleading subjet is at -pi/2
     //-------------------------------------------------------------------------
     /*
-    fTSubLeadingEta = subjets_image[1].first;
-    fTSubLeadingPhi = subjets_image[1].second;
+    m_SubLeadingEta = subjets_image[1].first;
+    m_SubLeadingPhi = subjets_image[1].second;
     double theta =
     atan(subjets_image[1].second/subjets_image[1].first)+2.*atan(1.); //atan(1)
     =
@@ -390,7 +390,7 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
                                                                                                                                     theta+=-4.*atan(1.);
     }
 
-    fTRotationAngle = theta;
+    m_RotationAngle = theta;
 
     for (int i=0; i<sorted_consts.size(); i++)
     {
@@ -433,10 +433,10 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     int counter = 0;
     for (int i = 1; i <= orig_im->GetNbinsX(); i++) {
         for (int j = 1; j <= orig_im->GetNbinsY(); j++) {
-            // fTRotatedIntensity[counter] = rotatedimage->GetBinContent(i,j);
-            fTIntensity[counter] = orig_im->GetBinContent(i, j);
-            // fTLocalDensity[counter] = localdensity->GetBinContent(i, j);
-            // fTGlobalDensity[counter] = globaldensity->GetBinContent(i, j);
+            // m_RotatedIntensity[counter] = rotatedimage->GetBinContent(i,j);
+            m_Intensity[counter] = orig_im->GetBinContent(i, j);
+            // m_LocalDensity[counter] = localdensity->GetBinContent(i, j);
+            // m_GlobalDensity[counter] = globaldensity->GetBinContent(i, j);
 
             counter++;
         }
@@ -452,21 +452,21 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     Nsubjettiness subjettiness_2(2, axis_spec, parameters);
     Nsubjettiness subjettiness_3(3, axis_spec, parameters);
 
-    fTTau1 = (float)subjettiness_1.result(leading_jet);
-    fTTau2 = (float)subjettiness_2.result(leading_jet);
-    fTTau3 = (float)subjettiness_3.result(leading_jet);
+    m_Tau1 = (float)subjettiness_1.result(leading_jet);
+    m_Tau2 = (float)subjettiness_2.result(leading_jet);
+    m_Tau3 = (float)subjettiness_3.result(leading_jet);
 
-    fTTau32 = (abs(fTTau2) < 1e-4 ? -10 : fTTau3 / fTTau2);
-    fTTau21 = (abs(fTTau1) < 1e-4 ? -10 : fTTau2 / fTTau1);
+    m_Tau32 = (abs(m_Tau2) < 1e-4 ? -10 : m_Tau3 / m_Tau2);
+    m_Tau21 = (abs(m_Tau1) < 1e-4 ? -10 : m_Tau2 / m_Tau1);
 
-    fTTau1_nopix = (float)subjettiness_1.result(leading_jet_nopix);
-    fTTau2_nopix = (float)subjettiness_2.result(leading_jet_nopix);
-    fTTau3_nopix = (float)subjettiness_3.result(leading_jet_nopix);
+    m_Tau1_nopix = (float)subjettiness_1.result(leading_jet_nopix);
+    m_Tau2_nopix = (float)subjettiness_2.result(leading_jet_nopix);
+    m_Tau3_nopix = (float)subjettiness_3.result(leading_jet_nopix);
 
-    fTTau32_nopix =
-        (abs(fTTau2_nopix) < 1e-4 ? -10 : fTTau3_nopix / fTTau2_nopix);
-    fTTau21_nopix =
-        (abs(fTTau1_nopix) < 1e-4 ? -10 : fTTau2_nopix / fTTau1_nopix);
+    m_Tau32_nopix =
+        (abs(m_Tau2_nopix) < 1e-4 ? -10 : m_Tau3_nopix / m_Tau2_nopix);
+    m_Tau21_nopix =
+        (abs(m_Tau1_nopix) < 1e-4 ? -10 : m_Tau2_nopix / m_Tau1_nopix);
 
     // // Step 7: Fill in nsubjettiness (old)
     // //----------------------------------------------------------------------------
@@ -477,12 +477,12 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     // Nsubjettiness old_subjettiness_2(2, axis_spec_old, parameters_old);
     // Nsubjettiness old_subjettiness_3(3, axis_spec_old, parameters_old);
 
-    // fTTau1 = (float) old_subjettiness_1.result(leading_jet);
-    // fTTau2 = (float) old_subjettiness_2.result(leading_jet);
-    // fTTau3 = (float) old_subjettiness_3.result(leading_jet);
+    // m_Tau1 = (float) old_subjettiness_1.result(leading_jet);
+    // m_Tau2 = (float) old_subjettiness_2.result(leading_jet);
+    // m_Tau3 = (float) old_subjettiness_3.result(leading_jet);
 
-    // fTTau32old = (abs(fTTau2) < 1e-4 ? -10 : fTTau3 / fTTau2);
-    // fTTau21old = (abs(fTTau1) < 1e-4 ? -10 : fTTau2 / fTTau1);
+    // m_Tau32old = (abs(m_Tau2) < 1e-4 ? -10 : m_Tau3 / m_Tau2);
+    // m_Tau21old = (abs(m_Tau1) < 1e-4 ? -10 : m_Tau2 / m_Tau1);
 
     tT->Fill();
 
@@ -492,96 +492,96 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
 // declate branches
 void JetImageBuffer::DeclareBranches() {
     // Event Properties
-    tT->Branch("NFilled", &fTNFilled, "NFilled/I");
+    tT->Branch("NFilled", &m_NFilled, "NFilled/I");
 
-    tT->Branch("Intensity", *&fTIntensity, "Intensity[NFilled]/F");
+    tT->Branch("Intensity", *&m_Intensity, "Intensity[NFilled]/F");
 
-    // tT->Branch("LocalDensity", *&fTLocalDensity, "LocalDensity[NFilled]/F");
-    // tT->Branch("GlobalDensity", *&fTGlobalDensity,
+    // tT->Branch("LocalDensity", *&m_LocalDensity, "LocalDensity[NFilled]/F");
+    // tT->Branch("GlobalDensity", *&m_GlobalDensity,
     // "GlobalDensity[NFilled]/F");
 
     // tT->Branch("RotatedIntensity",
-    //     *&fTRotatedIntensity, "RotatedIntensity[NFilled]/F");
+    //     *&m_RotatedIntensity, "RotatedIntensity[NFilled]/F");
 
-    tT->Branch("SubLeadingEta", &fTSubLeadingEta, "SubLeadingEta/F");
-    tT->Branch("SubLeadingPhi", &fTSubLeadingPhi, "SubLeadingPhi/F");
+    tT->Branch("SubLeadingEta", &m_SubLeadingEta, "SubLeadingEta/F");
+    tT->Branch("SubLeadingPhi", &m_SubLeadingPhi, "SubLeadingPhi/F");
 
-    tT->Branch("PCEta", &fTPCEta, "PCEta/F");
-    tT->Branch("PCPhi", &fTPCPhi, "PCPhi/F");
+    tT->Branch("PCEta", &m_PCEta, "PCEta/F");
+    tT->Branch("PCPhi", &m_PCPhi, "PCPhi/F");
 
-    tT->Branch("LeadingEta", &fTLeadingEta, "LeadingEta/F");
-    tT->Branch("LeadingPhi", &fTLeadingPhi, "LeadingPhi/F");
-    tT->Branch("LeadingPt", &fTLeadingPt, "LeadingPt/F");
-    tT->Branch("LeadingM", &fTLeadingM, "LeadingM/F");
-    // tT->Branch("RotationAngle", &fTRotationAngle, "RotationAngle/F");
+    tT->Branch("LeadingEta", &m_LeadingEta, "LeadingEta/F");
+    tT->Branch("LeadingPhi", &m_LeadingPhi, "LeadingPhi/F");
+    tT->Branch("LeadingPt", &m_LeadingPt, "LeadingPt/F");
+    tT->Branch("LeadingM", &m_LeadingM, "LeadingM/F");
+    // tT->Branch("RotationAngle", &m_RotationAngle, "RotationAngle/F");
 
-    tT->Branch("LeadingEta_nopix", &fTLeadingEta_nopix, "LeadingEta_nopix/F");
-    tT->Branch("LeadingPhi_nopix", &fTLeadingPhi_nopix, "LeadingPhi_nopix/F");
-    tT->Branch("LeadingPt_nopix", &fTLeadingPt_nopix, "LeadingPt_nopix/F");
-    tT->Branch("LeadingM_nopix", &fTLeadingM_nopix, "LeadingM_nopix/F");
+    tT->Branch("LeadingEta_nopix", &m_LeadingEta_nopix, "LeadingEta_nopix/F");
+    tT->Branch("LeadingPhi_nopix", &m_LeadingPhi_nopix, "LeadingPhi_nopix/F");
+    tT->Branch("LeadingPt_nopix", &m_LeadingPt_nopix, "LeadingPt_nopix/F");
+    tT->Branch("LeadingM_nopix", &m_LeadingM_nopix, "LeadingM_nopix/F");
 
-    tT->Branch("Tau1", &fTTau1, "Tau1/F");
-    tT->Branch("Tau2", &fTTau2, "Tau2/F");
-    tT->Branch("Tau3", &fTTau3, "Tau3/F");
+    tT->Branch("Tau1", &m_Tau1, "Tau1/F");
+    tT->Branch("Tau2", &m_Tau2, "Tau2/F");
+    tT->Branch("Tau3", &m_Tau3, "Tau3/F");
 
-    tT->Branch("Tau1_nopix", &fTTau1_nopix, "Tau1_nopix/F");
-    tT->Branch("Tau2_nopix", &fTTau2_nopix, "Tau2_nopix/F");
-    tT->Branch("Tau3_nopix", &fTTau3_nopix, "Tau3_nopix/F");
+    tT->Branch("Tau1_nopix", &m_Tau1_nopix, "Tau1_nopix/F");
+    tT->Branch("Tau2_nopix", &m_Tau2_nopix, "Tau2_nopix/F");
+    tT->Branch("Tau3_nopix", &m_Tau3_nopix, "Tau3_nopix/F");
 
-    tT->Branch("DeltaR", &fTdeltaR, "DeltaR/F");
+    tT->Branch("DeltaR", &m_deltaR, "DeltaR/F");
 
-    tT->Branch("Tau32", &fTTau32, "Tau32/F");
-    tT->Branch("Tau21", &fTTau21, "Tau21/F");
+    tT->Branch("Tau32", &m_Tau32, "Tau32/F");
+    tT->Branch("Tau21", &m_Tau21, "Tau21/F");
 
-    tT->Branch("Tau32_nopix", &fTTau32_nopix, "Tau32_nopix/F");
-    tT->Branch("Tau21_nopix", &fTTau21_nopix, "Tau21_nopix/F");
+    tT->Branch("Tau32_nopix", &m_Tau32_nopix, "Tau32_nopix/F");
+    tT->Branch("Tau21_nopix", &m_Tau21_nopix, "Tau21_nopix/F");
 
-    // tT->Branch("Tau32old", &fTTau32old, "Tau32old/F");
-    // tT->Branch("Tau21old", &fTTau21old, "Tau21old/F");
+    // tT->Branch("Tau32old", &m_Tau32old, "Tau32old/F");
+    // tT->Branch("Tau21old", &m_Tau21old, "Tau21old/F");
     return;
 }
 
 // resets vars
 void JetImageBuffer::ResetBranches() {
     // reset branches
-    fTNFilled = MaxN;
-    fTSubLeadingPhi = -999;
-    fTSubLeadingEta = -999;
-    fTPCPhi = -999;
-    fTPCEta = -999;
-    // fTRotationAngle = -999;
+    m_NFilled = MaxN;
+    m_SubLeadingPhi = -999;
+    m_SubLeadingEta = -999;
+    m_PCPhi = -999;
+    m_PCEta = -999;
+    // m_RotationAngle = -999;
 
-    fTTau32 = -999;
-    fTTau21 = -999;
+    m_Tau32 = -999;
+    m_Tau21 = -999;
 
-    fTTau1 = -999;
-    fTTau2 = -999;
-    fTTau3 = -999;
+    m_Tau1 = -999;
+    m_Tau2 = -999;
+    m_Tau3 = -999;
 
-    fTTau32_nopix = -999;
-    fTTau21_nopix = -999;
+    m_Tau32_nopix = -999;
+    m_Tau21_nopix = -999;
 
-    fTTau1_nopix = -999;
-    fTTau2_nopix = -999;
-    fTTau3_nopix = -999;
+    m_Tau1_nopix = -999;
+    m_Tau2_nopix = -999;
+    m_Tau3_nopix = -999;
 
-    // fTTau32old = -999;
-    // fTTau21old = -999;
+    // m_Tau32old = -999;
+    // m_Tau21old = -999;
 
-    fTLeadingEta = -999;
-    fTLeadingPhi = -999;
-    fTLeadingPt = -999;
-    fTLeadingM = -999;
+    m_LeadingEta = -999;
+    m_LeadingPhi = -999;
+    m_LeadingPt = -999;
+    m_LeadingM = -999;
 
-    fTLeadingEta_nopix = -999;
-    fTLeadingPhi_nopix = -999;
-    fTLeadingPt_nopix = -999;
-    fTLeadingM_nopix = -999;
+    m_LeadingEta_nopix = -999;
+    m_LeadingPhi_nopix = -999;
+    m_LeadingPt_nopix = -999;
+    m_LeadingM_nopix = -999;
 
     for (int iP = 0; iP < MaxN; ++iP) {
-        fTIntensity[iP] = -999;
-        // fTRotatedIntensity[iP]= -999;
-        // fTLocalDensity[iP]= -999;
-        // fTGlobalDensity[iP]= -999;
+        m_Intensity[iP] = -999;
+        // m_RotatedIntensity[iP]= -999;
+        // m_LocalDensity[iP]= -999;
+        // m_GlobalDensity[iP]= -999;
     }
 }
