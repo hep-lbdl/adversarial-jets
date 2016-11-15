@@ -17,7 +17,7 @@ bin/JetImageProperties.o bin/JetImageProperties.d: \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/Selector.hh \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/RangeDefinition.hh \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/ClusterSequenceStructure.hh \
-  include/JetImageProperties.h \
+  include/FastJetConf.h include/JetImageProperties.h \
   /usr/local/Cellar/pythia8/8.186/include/Pythia8/Pythia.h \
   /usr/local/Cellar/pythia8/8.186/include/Pythia8/Analysis.h \
   /usr/local/Cellar/pythia8/8.186/include/Pythia8/Basics.h \
@@ -67,7 +67,6 @@ bin/JetImageProperties.o bin/JetImageProperties.d: \
   /usr/local/Cellar/pythia8/8.186/include/Pythia8/PhaseSpace.h \
   /usr/local/Cellar/pythia8/8.186/include/Pythia8/SigmaOnia.h \
   /usr/local/Cellar/pythia8/8.186/include/Pythia8/Merging.h \
-  include/FastJetConf.h \
   /usr/local/Cellar/root/5.34.14/include/root/TRandom3.h \
   /usr/local/Cellar/root/5.34.14/include/root/TRandom.h \
   /usr/local/Cellar/root/5.34.14/include/root/TNamed.h \
@@ -121,6 +120,8 @@ bin/JetImageProperties.o bin/JetImageProperties.d: \
 /usr/local/Cellar/fastjet/3.2.0/include/fastjet/RangeDefinition.hh:
 
 /usr/local/Cellar/fastjet/3.2.0/include/fastjet/ClusterSequenceStructure.hh:
+
+include/FastJetConf.h:
 
 include/JetImageProperties.h:
 
@@ -221,8 +222,6 @@ include/JetImageProperties.h:
 /usr/local/Cellar/pythia8/8.186/include/Pythia8/SigmaOnia.h:
 
 /usr/local/Cellar/pythia8/8.186/include/Pythia8/Merging.h:
-
-include/FastJetConf.h:
 
 /usr/local/Cellar/root/5.34.14/include/root/TRandom3.h:
 

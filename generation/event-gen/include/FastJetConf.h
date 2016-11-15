@@ -1,5 +1,5 @@
-#ifndef MYFASTJETBASE_H
-#define MYFASTJETBASE_H
+#ifndef FASTJETCONF_H
+#define FASTJETCONF_H
 
 #include "fastjet/PseudoJet.hh"
 

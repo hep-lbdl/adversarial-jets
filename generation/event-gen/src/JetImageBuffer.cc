@@ -32,14 +32,6 @@ using namespace std;
 using namespace fastjet;
 using namespace fastjet::contrib;
 
-typedef pair<double, double> point;
-
-double euclidean_distance(const point &x, const point &y) {
-    double d1 = x.first - y.first;
-    double d2 = x.second - y.second;
-    return sqrt(d1 * d1 + d2 * d2);
-}
-
 // Constructor
 JetImageBuffer::JetImageBuffer(int imagesize) {
     imagesize *= imagesize;
@@ -264,11 +256,7 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     double sigmax2 = x2bar / n - mux * mux;
     double sigmay2 = y2bar / n - muy * muy;
     double sigmaxy = xybar / n - mux * muy;
-    double lamb_min = 0.5 * (sigmax2 + sigmay2 -
-                             sqrt((sigmax2 - sigmay2) * (sigmax2 - sigmay2) +
-                                  4 * sigmaxy * sigmaxy));
-    double lamb_max = 0.5 * (sigmax2 + sigmay2 +
-                             sqrt((sigmax2 - sigmay2) * (sigmax2 - sigmay2) +
+    double lamb_min = 0.5 * (sigmax2 + sigmay2 - sqrt((sigmax2 - sigmay2) * (sigmax2 - sigmay2) +
                                   4 * sigmaxy * sigmaxy));
 
     double dir_x = sigmax2 + sigmaxy - lamb_min;
@@ -300,31 +288,6 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     m_PCEta = dir_x;
     m_PCPhi = dir_y;
 
-    // Doing a little check to see how often the PC points in the direction of
-    // the
-    // subleading subjet if it exists.
-    // std::cout << "new event " << 100*(dir_x) << " " << 100*(dir_y) << " " <<
-    // leading_jet.m() << " " << leading_jet.perp() << " " << sigmax2*100 << " "
-    // << sigmay2*100 << " " << sigmaxy*100 << " " << 100*lamb_min << " " <<
-    // 100*lamb_max << " " << 100*(sigmax2+sigmaxy-lamb_max) << " " <<
-    // 100*(sigmay2+sigmaxy-lamb_max) << std::endl;
-    // for (int i=0; i<leading_jet.pieces().size(); i++){
-    //  std::cout << i << " " << (leading_jet.pieces()[i].eta() -
-    //  subjets[0].eta())*100 << " " <<
-    //  leading_jet.pieces()[i].delta_phi_to(subjets[0])*100 << " " <<
-    //  leading_jet.pieces()[i].e() << std::endl;
-    //}
-
-    // return;
-
-    // for (int i =1; i >= 0; i--)
-    //{
-    //    subjets_image[i].first = subjets_image[i].first -
-    //    subjets_image[0].first;
-    //    subjets_image[i].second = subjets_image[i].second-
-    //    subjets_image[0].second;
-    //}
-
     // Step 2: Fill in the unrotated image
     //-------------------------------------------------------------------------
     TH2F *orig_im =
@@ -336,97 +299,6 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
         // std::cout << i << "       " << consts_image[i].first  << " " <<
         // consts_image[i].second << std::endl;
     }
-
-    // Step 2b): fill in the density
-    //-------------------------------------------------------------------------
-    // double Rlocal = 0.5;
-    // double Rglobal = 1.0;
-    // TH2F* localdensity = new TH2F("", "", pixels, -range, range, pixels,
-    // -range, range);
-    // TH2F* globaldensity = new TH2F("", "", pixels, -range, range, pixels,
-    // -range, range);
-    // for (int i = 0; i < sorted_consts.size(); ++i)
-    // {
-    //     auto reference_px = consts_image[i];
-    //     auto ref_pt = sorted_consts[i].e();
-
-    //     double global_acc = 0;
-    //     double local_acc = 0;
-
-    //     for (int j = 0; j < sorted_consts.size(); ++j)
-    //     {
-    //         if (j != i)
-    //         {
-    //             auto dR = euclidean_distance(reference_px, consts_image[j]);
-    //             if (dR <= Rglobal)
-    //             {
-    //                 global_acc += (ref_pt / dR);
-    //                 if (dR <= Rlocal)
-    //                 {
-    //                     local_acc += (ref_pt / dR);
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     localdensity->Fill(reference_px.first, reference_px.second,
-    //     local_acc);
-    //     globaldensity->Fill(reference_px.first, reference_px.second,
-    //     global_acc);
-    // }
-
-    // Step 3: Rotate so the subleading subjet is at -pi/2
-    //-------------------------------------------------------------------------
-    /*
-    m_SubLeadingEta = subjets_image[1].first;
-    m_SubLeadingPhi = subjets_image[1].second;
-    double theta =
-    atan(subjets_image[1].second/subjets_image[1].first)+2.*atan(1.); //atan(1)
-    =
-    pi/4
-
-    if (-sin(theta)*subjets_image[1].first+cos(theta)*subjets_image[1].second >
-    0)
-    {
-                                                                                                                                    theta+=-4.*atan(1.);
-    }
-
-    m_RotationAngle = theta;
-
-    for (int i=0; i<sorted_consts.size(); i++)
-    {
-                                                                                                                                    double x =
-    consts_image[i].first;
-                                                                                                                                    double y =
-    consts_image[i].second;
-                                                                                                                                    consts_image[i].first
-    = cos(theta)*x + sin(theta)*y;
-                                                                                                                                    consts_image[i].second
-    = -sin(theta)*x + cos(theta)*y;
-    }
-
-    for (int i=0; i<2; i++)
-    {
-                                                                                                                                    double x =
-    subjets_image[i].first;
-                                                                                                                                    double y =
-    subjets_image[i].second;
-                                                                                                                                    subjets_image[i].first
-    = cos(theta)*x + sin(theta)*y;
-                                                                                                                                    subjets_image[i].second
-    =  -sin(theta)*x + cos(theta)*y;
-    }
-
-    theta = atan(subjets_image[1].second/subjets_image[1].first);
-    */
-
-    // //Step 4b): fill in the rotated image
-    // //-------------------------------------------------------------------------
-    // TH2F* rotatedimage = new TH2F("", "", pixels, -range, range, pixels,
-    // -range, range);
-    // for (int i = 0; i < sorted_consts.size(); i++)
-    // {
-    //     rotatedimage->Fill(consts_image[i].first,consts_image[i].second,sorted_consts[i].e());
-    // }
 
     // Step 5: Dump the images in the tree!
     //-------------------------------------------------------------------------
@@ -468,22 +340,6 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     m_Tau21_nopix =
         (abs(m_Tau1_nopix) < 1e-4 ? -10 : m_Tau2_nopix / m_Tau1_nopix);
 
-    // // Step 7: Fill in nsubjettiness (old)
-    // //----------------------------------------------------------------------------
-    // OnePass_KT_Axes axis_spec_old;
-    // NormalizedMeasure parameters_old(1.0, 1.0);
-
-    // Nsubjettiness old_subjettiness_1(1, axis_spec_old, parameters_old);
-    // Nsubjettiness old_subjettiness_2(2, axis_spec_old, parameters_old);
-    // Nsubjettiness old_subjettiness_3(3, axis_spec_old, parameters_old);
-
-    // m_Tau1 = (float) old_subjettiness_1.result(leading_jet);
-    // m_Tau2 = (float) old_subjettiness_2.result(leading_jet);
-    // m_Tau3 = (float) old_subjettiness_3.result(leading_jet);
-
-    // m_Tau32old = (abs(m_Tau2) < 1e-4 ? -10 : m_Tau3 / m_Tau2);
-    // m_Tau21old = (abs(m_Tau1) < 1e-4 ? -10 : m_Tau2 / m_Tau1);
-
     tT->Fill();
 
     return;
@@ -495,13 +351,6 @@ void JetImageBuffer::DeclareBranches() {
     tT->Branch("NFilled", &m_NFilled, "NFilled/I");
 
     tT->Branch("Intensity", *&m_Intensity, "Intensity[NFilled]/F");
-
-    // tT->Branch("LocalDensity", *&m_LocalDensity, "LocalDensity[NFilled]/F");
-    // tT->Branch("GlobalDensity", *&m_GlobalDensity,
-    // "GlobalDensity[NFilled]/F");
-
-    // tT->Branch("RotatedIntensity",
-    //     *&m_RotatedIntensity, "RotatedIntensity[NFilled]/F");
 
     tT->Branch("SubLeadingEta", &m_SubLeadingEta, "SubLeadingEta/F");
     tT->Branch("SubLeadingPhi", &m_SubLeadingPhi, "SubLeadingPhi/F");
@@ -535,9 +384,6 @@ void JetImageBuffer::DeclareBranches() {
 
     tT->Branch("Tau32_nopix", &m_Tau32_nopix, "Tau32_nopix/F");
     tT->Branch("Tau21_nopix", &m_Tau21_nopix, "Tau21_nopix/F");
-
-    // tT->Branch("Tau32old", &m_Tau32old, "Tau32old/F");
-    // tT->Branch("Tau21old", &m_Tau21old, "Tau21old/F");
     return;
 }
 
@@ -549,8 +395,6 @@ void JetImageBuffer::ResetBranches() {
     m_SubLeadingEta = -999;
     m_PCPhi = -999;
     m_PCEta = -999;
-    // m_RotationAngle = -999;
-
     m_Tau32 = -999;
     m_Tau21 = -999;
 
@@ -565,9 +409,6 @@ void JetImageBuffer::ResetBranches() {
     m_Tau2_nopix = -999;
     m_Tau3_nopix = -999;
 
-    // m_Tau32old = -999;
-    // m_Tau21old = -999;
-
     m_LeadingEta = -999;
     m_LeadingPhi = -999;
     m_LeadingPt = -999;
@@ -580,8 +421,5 @@ void JetImageBuffer::ResetBranches() {
 
     for (int iP = 0; iP < MaxN; ++iP) {
         m_Intensity[iP] = -999;
-        // m_RotatedIntensity[iP]= -999;
-        // m_LocalDensity[iP]= -999;
-        // m_GlobalDensity[iP]= -999;
     }
 }

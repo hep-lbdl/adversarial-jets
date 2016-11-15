@@ -78,8 +78,7 @@ bin/JetImageBuffer.o bin/JetImageBuffer.d: src/JetImageBuffer.cc \
   /usr/local/Cellar/root/5.34.14/include/root/TClass.h \
   /usr/local/Cellar/root/5.34.14/include/root/TObjString.h \
   /usr/local/Cellar/root/5.34.14/include/root/TVirtualTreePlayer.h \
-  include/JetImageBuffer.h \
-  /usr/local/Cellar/fastjet/3.2.0/include/fastjet/ClusterSequence.hh \
+  include/FastJetConf.h \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/PseudoJet.hh \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/internal/numconsts.hh \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/internal/base.hh \
@@ -90,6 +89,8 @@ bin/JetImageBuffer.o bin/JetImageBuffer.d: src/JetImageBuffer.cc \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/internal/deprecated.hh \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/Error.hh \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/PseudoJetStructureBase.hh \
+  include/JetImageBuffer.h \
+  /usr/local/Cellar/fastjet/3.2.0/include/fastjet/ClusterSequence.hh \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/JetDefinition.hh \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/LimitedWarning.hh \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/FunctionOfPseudoJet.hh \
@@ -149,7 +150,6 @@ bin/JetImageBuffer.o bin/JetImageBuffer.d: src/JetImageBuffer.cc \
   /usr/local/Cellar/pythia8/8.186/include/Pythia8/PhaseSpace.h \
   /usr/local/Cellar/pythia8/8.186/include/Pythia8/SigmaOnia.h \
   /usr/local/Cellar/pythia8/8.186/include/Pythia8/Merging.h \
-  include/FastJetConf.h \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/ClusterSequenceActiveAreaExplicitGhosts.hh \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/ClusterSequenceAreaBase.hh \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/GhostedAreaSpec.hh \
@@ -160,8 +160,9 @@ bin/JetImageBuffer.o bin/JetImageBuffer.d: src/JetImageBuffer.cc \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/ClusterSequence1GhostPassiveArea.hh \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/ClusterSequenceVoronoiArea.hh \
   /usr/local/Cellar/fastjet/3.2.0/include/fastjet/AreaDefinition.hh \
-  Nsubjettiness/Njettiness.hh Nsubjettiness/MeasureFunction.hh \
-  Nsubjettiness/AxesFinder.hh Nsubjettiness/WinnerTakeAllRecombiner.hh \
+  Nsubjettiness/Njettiness.hh Nsubjettiness/AxesFinder.hh \
+  Nsubjettiness/MeasureFunction.hh \
+  Nsubjettiness/WinnerTakeAllRecombiner.hh \
   Nsubjettiness/NjettinessDefinition.hh Nsubjettiness/Nsubjettiness.hh
 
 /usr/local/Cellar/root/5.34.14/include/root/TClonesArray.h:
@@ -322,9 +323,7 @@ bin/JetImageBuffer.o bin/JetImageBuffer.d: src/JetImageBuffer.cc \
 
 /usr/local/Cellar/root/5.34.14/include/root/TVirtualTreePlayer.h:
 
-include/JetImageBuffer.h:
-
-/usr/local/Cellar/fastjet/3.2.0/include/fastjet/ClusterSequence.hh:
+include/FastJetConf.h:
 
 /usr/local/Cellar/fastjet/3.2.0/include/fastjet/PseudoJet.hh:
 
@@ -345,6 +344,10 @@ include/JetImageBuffer.h:
 /usr/local/Cellar/fastjet/3.2.0/include/fastjet/Error.hh:
 
 /usr/local/Cellar/fastjet/3.2.0/include/fastjet/PseudoJetStructureBase.hh:
+
+include/JetImageBuffer.h:
+
+/usr/local/Cellar/fastjet/3.2.0/include/fastjet/ClusterSequence.hh:
 
 /usr/local/Cellar/fastjet/3.2.0/include/fastjet/JetDefinition.hh:
 
@@ -464,8 +467,6 @@ include/JetImageProperties.h:
 
 /usr/local/Cellar/pythia8/8.186/include/Pythia8/Merging.h:
 
-include/FastJetConf.h:
-
 /usr/local/Cellar/fastjet/3.2.0/include/fastjet/ClusterSequenceActiveAreaExplicitGhosts.hh:
 
 /usr/local/Cellar/fastjet/3.2.0/include/fastjet/ClusterSequenceAreaBase.hh:
@@ -488,9 +489,9 @@ include/FastJetConf.h:
 
 Nsubjettiness/Njettiness.hh:
 
-Nsubjettiness/MeasureFunction.hh:
-
 Nsubjettiness/AxesFinder.hh:
+
+Nsubjettiness/MeasureFunction.hh:
 
 Nsubjettiness/WinnerTakeAllRecombiner.hh:
 

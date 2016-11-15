@@ -91,9 +91,7 @@ class JetImageBuffer {
 
     float m_PCEta;
     float m_PCPhi;
-
-    // float m_RotationAngle;
-
+    
     float m_Tau1;
     float m_Tau2;
     float m_Tau3;
@@ -109,23 +107,7 @@ class JetImageBuffer {
     float m_Tau32_nopix;
 
     float m_deltaR;
-
-    // float m_Tau21old;
-    // float m_Tau32old;
-
     float *m_Intensity;
-    // float *m_RotatedIntensity;
-    // float *m_LocalDensity;
-    // float *m_GlobalDensity;
-
-    // float m_Pt [MaxN];
-    // double m_Eta [MaxN];
-    // double m_Phi [MaxN];
-
-    // float m_Intensity[MaxN];
-    // float m_RotatedIntensity[MaxN];
-    // int  m_Pixx[MaxN];
-    // int  m_Pixy[MaxN];
 };
 
 #endif
