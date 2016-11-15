@@ -91,7 +91,7 @@ class JetImageBuffer {
 
     float m_PCEta;
     float m_PCPhi;
-    
+
     float m_Tau1;
     float m_Tau2;
     float m_Tau3;

@@ -256,7 +256,8 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     double sigmax2 = x2bar / n - mux * mux;
     double sigmay2 = y2bar / n - muy * muy;
     double sigmaxy = xybar / n - mux * muy;
-    double lamb_min = 0.5 * (sigmax2 + sigmay2 - sqrt((sigmax2 - sigmay2) * (sigmax2 - sigmay2) +
+    double lamb_min = 0.5 * (sigmax2 + sigmay2 -
+                             sqrt((sigmax2 - sigmay2) * (sigmax2 - sigmay2) +
                                   4 * sigmaxy * sigmaxy));
 
     double dir_x = sigmax2 + sigmaxy - lamb_min;

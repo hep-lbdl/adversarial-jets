@@ -92,11 +92,11 @@ FASTJET_BEGIN_NAMESPACE // defined in fastjet/internal/base.hh
         // "unnormalized_measure" is now the recommended default usage
         // But it is recommended to use MeasureDefinition instead of these.
         enum MeasureMode {
-            normalized_measure,        // default normalized measure
-            unnormalized_measure,      // default unnormalized measure
-            geometric_measure,         // geometric measure
-            normalized_cutoff_measure, // default normalized measure with
-                                       // explicit Rcutoff
+            normalized_measure,          // default normalized measure
+            unnormalized_measure,        // default unnormalized measure
+            geometric_measure,           // geometric measure
+            normalized_cutoff_measure,   // default normalized measure with
+                                         // explicit Rcutoff
             unnormalized_cutoff_measure, // default unnormalized measure with
                                          // explicit Rcutoff
             geometric_cutoff_measure // geometric measure with explicit Rcutoff

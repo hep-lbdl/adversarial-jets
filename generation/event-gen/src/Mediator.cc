@@ -7,12 +7,12 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "TError.h"
-#include "TString.h"
-#include "TSystem.h"
 #include "TClonesArray.h"
 #include "TDatabasePDG.h"
+#include "TError.h"
 #include "TParticle.h"
+#include "TString.h"
+#include "TSystem.h"
 
 #include "fastjet/ClusterSequence.hh"
 #include "fastjet/PseudoJet.hh"
