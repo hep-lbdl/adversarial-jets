@@ -115,7 +115,7 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     ResetBranches();
 
     // new event-----------------------
-    fTEventNumber = ievt;
+    evt_number = ievt;
     std::vector<fastjet::PseudoJet> particlesForJets;
     std::vector<fastjet::PseudoJet> particlesForJets_nopixel;
 

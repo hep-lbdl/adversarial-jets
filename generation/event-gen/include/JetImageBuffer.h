@@ -56,7 +56,7 @@ class JetImageBuffer {
     JetImageProperties *tool;
 
     // Tree Vars ---------------------------------------
-    int fTEventNumber;
+    int evt_number;
     int fTNPV;
 
     void SetupInt(int &val, TString name);
