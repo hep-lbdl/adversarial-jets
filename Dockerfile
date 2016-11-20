@@ -88,15 +88,18 @@ ENV C_INCLUDE_PATH=FASTJET_ROOT/include:$PYTHIA_ROOT/include
 ENV CPLUS_INCLUDE_PATH=$FASTJET_ROOT/include:$PYTHIA_ROOT/include
 ENV PATH=$PATH:$ROOTSYS/bin:$PYTHIA_ROOT/bin:$FASTJET_ROOT/bin
 
-ADD generation $HOME/generation
+RUN pip install joblib
 
-WORKDIR $HOME
+ADD generation /root/generation
 
+WORKDIR /root/generation
+ENV PATH=$PATH:/root/generation/event-gen/bin:/root/generation
 
-
-
-
-
-
+RUN make
 
 
+
+# VOLUME /data
+
+ENTRYPOINT ["python", "generateEvents.py"]
+# ENTRYPOINT ["jet-image-maker"]
