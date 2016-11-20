@@ -134,7 +134,7 @@ bool JetImageProperties::IsIsolated(Pythia8::Particle *particle,
     float sumpT = 0;
     fastjet::PseudoJet part(particle->px(), particle->py(), particle->pz(),
                             particle->e());
-    for (unsigned int ip = 0; ip < pythia8->event.size(); ++ip) {
+    for (int ip = 0; ip < pythia8->event.size(); ++ip) {
         if (!pythia8->event[ip].isFinal())
             continue;
         if (fabs(pythia8->event[ip].id()) == 12)

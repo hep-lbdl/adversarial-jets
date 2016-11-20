@@ -49,8 +49,8 @@ JetImageBuffer::JetImageBuffer(int imagesize) {
     // model the detector as a 2D histogram
     //                         xbins       y bins
     detector = new TH2F("", "", 100, -5, 5, 200, -10, 10);
-    for (int i = 1; i <= 100; i++) {
-        for (int j = 1; j <= 200; j++) {
+    for (unsigned int i = 1; i <= 100; i++) {
+        for (unsigned int j = 1; j <= 200; j++) {
             detector->SetBinContent(i, j, 0);
         }
     }
@@ -199,7 +199,7 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     vector<fastjet::PseudoJet> sorted_consts =
         sorted_by_pt(leading_jet.constituents());
 
-    for (int i = 0; i < sorted_consts.size(); i++) {
+    for (unsigned int i = 0; i < sorted_consts.size(); i++) {
         pair<double, double> const_hold;
         const_hold.first = sorted_consts[i].eta();
         const_hold.second = sorted_consts[i].phi();
@@ -209,7 +209,7 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     vector<fastjet::PseudoJet> subjets = leading_jet.pieces();
 
     // Step 1: Center on the jet axis.
-    for (int i = 0; i < sorted_consts.size(); i++) {
+    for (unsigned int i = 0; i < sorted_consts.size(); i++) {
         consts_image[i].first = consts_image[i].first - subjets[0].eta();
         consts_image[i].second =
             sorted_consts[i].delta_phi_to(subjets[0]); // use delta phi to take
@@ -225,7 +225,7 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     double xybar = 0.;
     double n = 0;
 
-    for (int i = 0; i < leading_jet.constituents().size(); i++) {
+    for (unsigned int i = 0; i < leading_jet.constituents().size(); i++) {
         double x = consts_image[i].first;
         double y = consts_image[i].second;
         double E = sorted_consts[i].e();
@@ -241,7 +241,7 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     ybar = 0.;
     n = 0.;
 
-    for (int i = 0; i < leading_jet.constituents().size(); i++) {
+    for (unsigned int i = 0; i < leading_jet.constituents().size(); i++) {
         double x = consts_image[i].first - mux;
         double y = consts_image[i].second - muy;
         double E = sorted_consts[i].e();
@@ -270,7 +270,7 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     double Eup = 0.;
     double Edn = 0.;
 
-    for (int i = 0; i < leading_jet.constituents().size(); i++) {
+    for (unsigned int i = 0; i < leading_jet.constituents().size(); i++) {
         double x = consts_image[i].first - mux;
         double y = consts_image[i].second - muy;
         double E = sorted_consts[i].e();
@@ -294,7 +294,7 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     TH2F *orig_im =
         new TH2F("", "", pixels, -range, range, pixels, -range, range);
 
-    for (int i = 0; i < sorted_consts.size(); i++) {
+    for (unsigned int i = 0; i < sorted_consts.size(); i++) {
         orig_im->Fill(consts_image[i].first, consts_image[i].second,
                       sorted_consts[i].e());
         // std::cout << i << "       " << consts_image[i].first  << " " <<

@@ -26,7 +26,7 @@
 
 FASTJET_BEGIN_NAMESPACE // defined in fastjet/internal/base.hh
 
-    namespace contrib {
+namespace contrib {
 
     // result returns tau_N with normalization dependent on what is specified in
     // constructor

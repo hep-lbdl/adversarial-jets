@@ -1,40 +1,29 @@
 # --------------------------------------------- #
 # Makefile for Adversarial Jets Framework       #
-# Luke de Oliveira, 11/11/16                    # 
-# lukedeo@vaitech.io                            # 
+# Luke de Oliveira, November 11, 2016           #
+# lukedeo@vaitech.io                            #
 # --------------------------------------------- #
 
-
-# -- set dirs
+# set directories
 BUILD        := build
 SRC          := src
 INC          := include
+LIB          := $(CURDIR)/lib
 OUTPUT       := bin
+
 NSUBDIR      := Nsubjettiness
-EXECUTABLE   := event-gen
-EXTERNALS    := njettiness
+CMDPARSER    := cmd-parser
 
-# -- set search paths
-vpath %.cc   $(SRC)
-vpath %.hh   $(INC)
-vpath %.h    $(INC)
+# set search path
+vpath %.o    $(BUILD)
+vpath %.cc   $(SRC) 
+vpath %.h    $(INC) 
+vpath %.hh   $(INC) 
 
-# -- set compiler and flags
+# set compiler and flags
+
 CXX          ?= g++
-CXXFLAGS     := -O2 -Wall -fPIC -I$(INC) -I$(NSUBDIR) -std=c++11 -pedantic
-CXXFLAGS     += -Wsign-compare
-LIBS         :=
-LDFLAGS      :=
-
-# -- define objects from files in the SRC directory
-GEN_OBJ_SRC   := $(wildcard $(SRC)/*.cc)
-GEN_OBJ       := $(notdir $(GEN_OBJ_SRC:%.cc=%.o))
-
-GEN_OBJ_PATHS := $(GEN_OBJ:%=$(BUILD)/%)
-
-# -- all top level 
-ALL_TOP_LEVEL := 
-
+CXXFLAGS     := -Wall -fPIC -I$(INC) -I$(NSUBDIR) -I$(CMDPARSER)/include -g -std=c++11 
 
 ifeq ($(CXX),clang++)
 CXXFLAGS += -stdlib=libc++
@@ -53,6 +42,7 @@ PYTHIAFLAGS    := $(shell pythia8-config --cxxflags)
 PYTHIALDFLAGS  := $(shell pythia8-config --ldflags)
 PYTHIALIBS      = $(shell pythia8-config --libs)
 
+
 HEPLIBS += $(FASTJETLIBS)
 HEPLIBS += $(ROOTLIBS)
 HEPLIBS += $(PYTHIALIBS)
@@ -62,35 +52,38 @@ CXXFLAGS += $(ROOTFLAGS)
 CXXFLAGS += $(FASTJETFLAGS)
 CXXFLAGS += $(PYTHIAFLAGS)
 
-LIBS     += $(HEPLIBS) -lNsubjettiness # from local NSJ
-LDFLAGS  += $(ROOTLDFLAGS) $(PYTHIALDFLAGS) $(FASTJETLDFLAGS)
+LIBS     += $(HEPLIBS)
+
+LDFLAGS   = $(ROOTLDFLAGS) $(PYTHIALDFLAGS) $(FASTJETLDFLAGS)
+
+# building excecutable
+OBJ := jet-image-maker.o JetImageBuffer.o JetImageProperties.o
 
 
-# everything with this prefix will be built as an executable
-EXE_PREFIX   := event-
+GEN_OBJ_SRC   := $(wildcard $(SRC)/*.cc)
+GEN_OBJ       := $(notdir $(GEN_OBJ_SRC:%.cc=%.o))
+GEN_OBJ_PATHS := $(GEN_OBJ:%=$(BUILD)/%)
 
+EXE_PREFIX   := jet-
 ALL_EXE_SRC   := $(wildcard $(SRC)/$(EXE_PREFIX)*.cc)
 ALL_EXE       := $(notdir $(ALL_EXE_SRC:%.cc=%))
 ALL_EXE_PATHS := $(ALL_EXE:%=$(OUTPUT)/%)
 
-# filter out the general objects
-GEN_OBJ_PATHS := $(filter-out $(BUILD)/$(EXE_PREFIX)%.o,$(GEN_OBJ_PATHS))
+EXTERNALS  := nsubjettiness
 
-# add to all top level
-ALL_TOP_LEVEL += $(ALL_EXE_PATHS)
+all: $(EXTERNALS) $(ALL_EXE_PATHS)
+	@echo "jet-images build sucessful."
 
-# -- first call here
-all: $(EXTERNALS) $(ALL_TOP_LEVEL)
+nsubjettiness:
+	@echo "Building $@"
+	@$(MAKE) -C $(NSUBDIR)
 
-# build exe
 $(OUTPUT)/$(EXE_PREFIX)%: $(GEN_OBJ_PATHS) $(BUILD)/$(EXE_PREFIX)%.o
 	@mkdir -p $(OUTPUT)
 	@echo "linking $^ --> $@"
-	@$(CXX) -o $@ $^ -L$(NSUBDIR) $(LIBS) $(LDFLAGS)
+	@$(CXX) -o $@ $^ -L$(NSUBDIR) -lNsubjettiness $(LDFLAGS) $(LIBS)
 
-njettiness:
-	@echo "Building $@"
-	@$(MAKE) -C $(NSUBDIR)
+# auto dependency generation for build
 
 # compile rule
 $(BUILD)/%.o: %.cc
@@ -99,26 +92,30 @@ $(BUILD)/%.o: %.cc
 	@$(CXX) -c $(CXXFLAGS) $< -o $@
 
 # use auto dependency generation
-ALLOBJ       := $(GEN_OBJ)
-DEP          := $(BUILD)
+DEP = $(BUILD)
+
 
 
 DEPTARGSTR = -MT $(BUILD)/$*.o -MT $(DEP)/$*.d
 $(DEP)/%.d: %.cc
 	@echo making dependencies for $<
 	@mkdir -p $(DEP)
-	@$(CXX) -MM -MP $(DEPTARGSTR) $(CXXFLAGS) $(PY_FLAGS) $< -o $@
+	@$(CXX) -MM -MP $(DEPTARGSTR) $(CXXFLAGS) $< -o $@ 
 
 # clean
-.PHONY : clean rmdep all
-CLEANLIST     = *~ *.o *.o~ *.d core
+.PHONY : clean rmdep
+CLEANLIST     = *~ *.o *.o~ *.d core 
+
 clean:
-	@$(MAKE) $@ -C $(NSUBDIR)
 	rm -fr $(CLEANLIST) $(CLEANLIST:%=$(BUILD)/%) $(CLEANLIST:%=$(DEP)/%)
-	rm -fr $(BUILD) $(DICT) $(OUTPUT) $(LIBDIR)
-
-rmdep:
+	rm -fr $(BUILD) $(OUTPUT) 
 	@$(MAKE) $@ -C $(NSUBDIR)
+
+purge:
+	rm -fr $(CLEANLIST) $(CLEANLIST:%=$(BUILD)/%) $(CLEANLIST:%=$(DEP)/%)
+	rm -fr $(BUILD) $(OUTPUT) 
+	@$(MAKE) $@ -C $(NSUBDIR)
+
+rmdep: 
 	rm -f $(DEP)/*.d
-
-
+	@$(MAKE) $@ -C $(NSUBDIR)

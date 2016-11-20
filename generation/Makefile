@@ -1,7 +1,7 @@
 # --------------------------------------------- #
 # Makefile for Adversarial Jets Framework       #
-# Luke de Oliveira, July 1, 2015                # 
-# lukedeo@vaitech.io                            # 
+# Luke de Oliveira, November 11, 2016           #
+# lukedeo@vaitech.io                            #
 # --------------------------------------------- #
 
 # set directories
