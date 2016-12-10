@@ -266,10 +266,11 @@ if __name__ == '__main__':
             for p in ['train', 'test']:
                 print ROW_FMT.format('{m} ({p})'.format(m=m, p=p), *report[m][p])
 
+        # save weights every epoch
         generator.save_weights(
-            'models/generator_epoch_{}.hdf5'.format(epoch), True)
+            'params_generator_epoch_{0:03d}.hdf5'.format(epoch), True)
         discriminator.save_weights(
-            'models/discriminator_epoch_{}.hdf5'.format(epoch), True)
+            'params_discriminator_epoch_{0:03d}.hdf5'.format(epoch), True)
 
         # generate some digits to display
         noise = np.random.uniform(-1, 1, (100, latent_size))
