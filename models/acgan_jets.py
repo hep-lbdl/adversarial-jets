@@ -277,7 +277,7 @@ if __name__ == '__main__':
 
         sampled_labels = np.array([
             [i] * 50 for i in range(2)
-        ]).reshape(-1, 1)
+        ]).reshape(-1, 1, 1)
 
         # get a batch to display
         generated_images = generator.predict(
