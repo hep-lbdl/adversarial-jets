@@ -50,7 +50,8 @@ def build_generator(latent_size):
     cnn.add(LeakyReLU())
 
     # take a channel axis reduction to (..., 1, 25, 25)
-    cnn.add(Convolution2D(1, 2, 2, border_mode='same', init='glorot_normal'))
+    cnn.add(Convolution2D(1, 2, 2, border_mode='same',
+                          init='glorot_normal', activation='tanh'))
 #    cnn.add(Activation('relu'))
 
     # this is the z space commonly refered to in GAN papers
@@ -58,8 +59,6 @@ def build_generator(latent_size):
 
     # this will be our label
     image_class = Input(shape=(1, 1), dtype='int32')
-
-    # 10 classes in MNIST
     cls = Flatten()(Embedding(2, latent_size, input_length=1,
                               init='glorot_normal')(image_class))
 
@@ -143,7 +142,7 @@ if __name__ == '__main__':
     ix = range(d.shape[0])
     np.random.shuffle(ix)
     d = np.array(d[ix][:90000])
-    X = d['image'] / 120.0
+    X = d['image']
     y = d['signal']
 
     from sklearn.cross_validation import train_test_split
@@ -151,6 +150,9 @@ if __name__ == '__main__':
     X_train = np.expand_dims(X_train, axis=1)
     X_test = np.expand_dims(X_test, axis=1)
     nb_train, nb_test = X_train.shape[0], X_test.shape[0]
+
+    X_train = (X_train.astype(np.float32) - 127.5) / 127.5
+    X_test = (X_test.astype(np.float32) - 127.5) / 127.5
 
     for epoch in range(nb_epochs):
         print "Epoch {} of {}".format(epoch + 1, nb_epochs)
@@ -164,7 +166,7 @@ if __name__ == '__main__':
         # for index in tqdm(range(nb_batches), unit=' batches'):
         for index in xrange(nb_batches):
             progress_bar.update(index)
-            # ------------------------ 
+            # ------------------------
             # JUST GENERATE FAKE IMAGES WITH CURRENT STATE OF G
             # generate a new batch of noise
             #noise = np.random.uniform(-1, 1, (batch_size, latent_size))
@@ -184,7 +186,7 @@ if __name__ == '__main__':
 
             # ------------------------
             # TRAIN D TO DISCRIMINATE FAKE FROM REAL IMAGES
-            # -- once you generated images from noise, concatenate them with 
+            # -- once you generated images from noise, concatenate them with
             # -- the real ones to then pass them to the D
             X = np.concatenate((image_batch, generated_images))
             y = np.array([1] * batch_size + [0] * batch_size)
@@ -200,11 +202,11 @@ if __name__ == '__main__':
             noise = np.random.normal(0, 1, (2 * batch_size, latent_size))
             sampled_labels = np.random.randint(0, nb_labels, 2 * batch_size)
 
-            trick = np.ones(2 * batch_size) # G wants D to say 1 for all fake images
+            # G wants D to say 1 for all fake images
+            trick = np.ones(2 * batch_size)
 
             epoch_gen_loss.append(combined.train_on_batch(
                 [noise, sampled_labels.reshape((-1, 1, 1))], [trick, sampled_labels]))
-
 
         print "\nTesting for epoch {}:".format(epoch + 1)
 
@@ -213,7 +215,7 @@ if __name__ == '__main__':
         # generate a new batch of noise
         #noise = np.random.uniform(-1, 1, (nb_test, latent_size))
         noise = np.random.normal(0, 1, (nb_test, latent_size))
-        
+
         # get a batch of real images
         image_batch = X_test
         label_batch = y_test
@@ -269,19 +271,21 @@ if __name__ == '__main__':
         discriminator.save_weights(
             'models/discriminator_epoch_{}.hdf5'.format(epoch), True)
 
-        # noise = np.random.uniform(-1, 1, (nb_labels0, latent_size))
+        # generate some digits to display
+        noise = np.random.uniform(-1, 1, (100, latent_size))
 
-        # sampled_labels = np.array([
-        #     [i] * 50 for i in xrange(2)
-        # ]).reshape(-1, 1, 1)
+        sampled_labels = np.array([
+            [i] * 50 for i in range(2)
+        ]).reshape(-1, 1)
 
-        # # get a batch to display
-        # generated_images = generator.predict(
-        #     [noise, sampled_labels], verbose=0)
+        # get a batch to display
+        generated_images = generator.predict(
+            [noise, sampled_labels], verbose=0)
 
-        # img = (np.concatenate([r.reshape(-1, 25)
-        #                        for r in np.split(generated_images, 10)
-        #                        ], axis=-1) * 127.5 + 127.5).astype(np.uint8)
+        # arrange them into a grid
+        img = (np.concatenate([r.reshape(-1, 25)
+                               for r in np.split(generated_images, 10)
+                               ], axis=-1) * 127.5 + 127.5).astype(np.uint8)
 
-        # Image.fromarray(img).save(
-        #     "plots/epoch_{}_generated.png".format(epoch))
+        Image.fromarray(img).save(
+            'plot_epoch_{0:03d}_generated.png'.format(epoch))
