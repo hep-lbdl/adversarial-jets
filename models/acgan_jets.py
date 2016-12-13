@@ -91,13 +91,10 @@ def build_generator(latent_size):
 
     loc.add(Dropout(0.3))
 
-    loc.add(Highway(1024, activation='tanh', transform_bias=-8))
+    loc.add(Dense(1024, activation='relu'))
     loc.add(Dropout(0.3))
 
-    loc.add(Highway(1024, activation='tanh', transform_bias=-8))
-    loc.add(Dropout(0.3))
-
-    loc.add(Highway(1024, activation='tanh', transform_bias=-8))
+    loc.add(Dense(1024, activation='relu'))
     loc.add(Dropout(0.3))
 
     loc.add(Dense(25 ** 2, activation='sigmoid', init='glorot_normal'))
