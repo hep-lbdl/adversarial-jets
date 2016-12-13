@@ -110,11 +110,11 @@ def build_generator(latent_size):
                   activation='tanh', init='glorot_normal'))
     bkg.add(LeakyReLU())
 
-    loc.add(Dense(512, activation='relu'))
-    loc.add(LeakyReLU())
+    bkg.add(Dense(512, activation='relu'))
+    bkg.add(LeakyReLU())
 
     bkg.add(Dense(1024, activation='relu'))
-    loc.add(LeakyReLU())
+    bkg.add(LeakyReLU())
     # bkg.add(Dropout(0.3))
 
     bkg.add(Dense(25 ** 2, init='glorot_normal'))
