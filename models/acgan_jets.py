@@ -88,18 +88,19 @@ def build_generator(latent_size):
 
     loc.add(Dense(512, input_dim=latent_size,
                   activation='tanh', init='glorot_normal'))
+
     loc.add(Dropout(0.3))
 
     loc.add(Highway(1024, activation='tanh',
-                    init='glorot_normal', transform_bias=-8))
+                    transform_bias=-8, init='glorot_normal'))
     loc.add(Dropout(0.3))
 
     loc.add(Highway(1024, activation='tanh',
-                    init='glorot_normal', transform_bias=-8))
+                    transform_bias=-8, init='glorot_normal'))
     loc.add(Dropout(0.3))
 
     loc.add(Highway(1024, activation='tanh',
-                    init='glorot_normal', transform_bias=-8))
+                    transform_bias=-8, init='glorot_normal'))
     loc.add(Dropout(0.3))
 
     loc.add(Dense(25 ** 2, activation='sigmoid', init='glorot_normal'))
