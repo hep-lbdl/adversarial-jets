@@ -149,7 +149,7 @@ def build_discriminator():
 if __name__ == '__main__':
     nb_epochs = 30
     batch_size = 100
-    latent_size = 128
+    latent_size = 256
     nb_labels = 2
 
     # build the discriminator

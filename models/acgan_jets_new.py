@@ -94,24 +94,17 @@ def build_generator(latent_size):
                   activation='tanh', init='glorot_normal'))
     loc.add(LeakyReLU())
 
-    loc.add(Dense(512, activation='relu'))
-    loc.add(LeakyReLU())
-
     loc.add(Dense(1024, activation='relu'))
     loc.add(LeakyReLU())
     # loc.add(Dropout(0.3))
 
-    loc.add(Dense(25 ** 2, init='glorot_normal'))
-    loc.add(ThresholdedReLU(theta=1.0))
+    loc.add(Dense(25 ** 2, activation='relu', init='glorot_normal'))
     loc.add(Reshape((1, 25, 25)))
 
     bkg = Sequential()
 
     bkg.add(Dense(512, input_dim=latent_size,
                   activation='tanh', init='glorot_normal'))
-    bkg.add(LeakyReLU())
-
-    bkg.add(Dense(512, activation='relu'))
     bkg.add(LeakyReLU())
 
     bkg.add(Dense(1024, activation='relu'))
@@ -135,7 +128,7 @@ def build_generator(latent_size):
     # hadamard product between z-space and a class conditional embedding
     h = merge([latent, cls], mode='mul')
 
-    fake_image = merge([cnn(h), loc(h), bkg(h)], mode='sum')
+    fake_image = merge([cnn(h), loc(h), bkg(h)], mode='ave')
 
     return Model(input=[latent, image_class], output=fake_image)
 
@@ -199,9 +192,9 @@ def build_discriminator():
     return Model(input=image, output=[fake, aux])
 
 if __name__ == '__main__':
-    nb_epochs = 30
+    nb_epochs = 50
     batch_size = 100
-    latent_size = 128
+    latent_size = 256
     nb_labels = 2
 
     # build the discriminator
@@ -246,9 +239,9 @@ if __name__ == '__main__':
     nb_train, nb_test = X_train.shape[0], X_test.shape[0]
 
     # X_train = (X_train.astype(np.float32) - 125) / 125
-    X_train = X_train.astype(np.float32) / 10
+    X_train = X_train.astype(np.float32) / 100
     # X_test = (X_test.astype(np.float32) - 125) / 125
-    X_test = X_test.astype(np.float32) / 10
+    X_test = X_test.astype(np.float32) / 100
 
     for epoch in range(nb_epochs):
         print "Epoch {} of {}".format(epoch + 1, nb_epochs)
