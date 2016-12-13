@@ -46,12 +46,18 @@ def build_generator(latent_size):
     cnn.add(UpSampling2D(size=(2, 2)))
 
     # valid conv to (..., 32, 25, 25)
-    cnn.add(Convolution2D(128, 4, 4, border_mode='valid', init='glorot_normal'))
+    cnn.add(Convolution2D(128, 5, 5, border_mode='same', init='glorot_normal'))
     cnn.add(LeakyReLU())
 
+    nb_out_dims = 4
     # take a channel axis reduction to (..., 1, 25, 25)
-    cnn.add(Convolution2D(1, 2, 2, border_mode='same',
+    cnn.add(Convolution2D(nb_out_dims, 4, 4,
+                          border_mode='valid', init='glorot_normal'))
+    cnn.add(LeakyReLU())
+    cnn.add(Convolution2D(1, 1, 1, border_mode='same', bias=False,
                           init='glorot_normal', activation='tanh'))
+
+
 #    cnn.add(Activation('relu'))
 
     # this is the z space commonly refered to in GAN papers
@@ -72,26 +78,49 @@ def build_generator(latent_size):
 
 def build_discriminator():
     # build a relatively standard conv net
+
     cnn = Sequential()
+    cnn.add(Flatten(input_shape=(1, 25, 25)))
 
-    cnn.add(Convolution2D(32, 3, 3, border_mode='same', subsample=(2, 2),
-                          input_shape=(1, 25, 25)))
+    cnn.add(Dense(512, init='he_uniform'))
     cnn.add(LeakyReLU())
     cnn.add(Dropout(0.3))
 
-    cnn.add(Convolution2D(64, 3, 3, border_mode='same', subsample=(2, 2)))
+    cnn.add(Dense(512, init='he_uniform'))
     cnn.add(LeakyReLU())
     cnn.add(Dropout(0.3))
 
-    cnn.add(Convolution2D(128, 3, 3, border_mode='same', subsample=(2, 2)))
+    cnn.add(Dense(512, init='he_uniform'))
     cnn.add(LeakyReLU())
     cnn.add(Dropout(0.3))
 
-    cnn.add(Convolution2D(256, 3, 3, border_mode='same', subsample=(2, 2)))
+    cnn.add(Dense(256, init='he_uniform'))
     cnn.add(LeakyReLU())
     cnn.add(Dropout(0.3))
 
-    cnn.add(Flatten())
+    cnn.add(Dense(256, init='he_uniform'))
+    cnn.add(LeakyReLU())
+    cnn.add(Dropout(0.2))
+    # cnn = Sequential()
+
+    # cnn.add(Convolution2D(32, 3, 3, border_mode='same', subsample=(2, 2),
+    #                       input_shape=(1, 25, 25)))
+    # cnn.add(LeakyReLU())
+    # cnn.add(Dropout(0.3))
+
+    # cnn.add(Convolution2D(64, 3, 3, border_mode='same', subsample=(2, 2)))
+    # cnn.add(LeakyReLU())
+    # cnn.add(Dropout(0.3))
+
+    # cnn.add(Convolution2D(128, 3, 3, border_mode='same', subsample=(2, 2)))
+    # cnn.add(LeakyReLU())
+    # cnn.add(Dropout(0.3))
+
+    # cnn.add(Convolution2D(256, 3, 3, border_mode='same', subsample=(2, 2)))
+    # cnn.add(LeakyReLU())
+    # cnn.add(Dropout(0.3))
+
+    # cnn.add(Flatten())
 
     image = Input(shape=(1, 25, 25))
 
