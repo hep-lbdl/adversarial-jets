@@ -60,17 +60,17 @@ def build_generator(latent_size):
 
     cnn.add(Dense(1024, input_dim=latent_size))
     cnn.add(LeakyReLU())
-    cnn.add(Dropout(0.3))
+    # cnn.add(Dropout(0.3))
     cnn.add(Dense(128 * 7 * 7))
     cnn.add(LeakyReLU())
-    cnn.add(Dropout(0.3))
+    # cnn.add(Dropout(0.3))
     cnn.add(Reshape((128, 7, 7)))
 
     # upsample to (..., 64, 14, 14)
     cnn.add(UpSampling2D(size=(2, 2)))
     cnn.add(Convolution2D(256, 5, 5, border_mode='same', init='glorot_normal'))
     cnn.add(LeakyReLU())
-    cnn.add(Dropout(0.3))
+    # cnn.add(Dropout(0.3))
 
     # upsample to (..., 64, 28, 28)
     cnn.add(UpSampling2D(size=(2, 2)))
@@ -78,7 +78,7 @@ def build_generator(latent_size):
     # valid conv to (..., 32, 25, 25)
     cnn.add(Convolution2D(128, 4, 4, border_mode='valid', init='glorot_normal'))
     cnn.add(LeakyReLU())
-    cnn.add(Dropout(0.3))
+    # cnn.add(Dropout(0.3))
 
     # take a channel axis reduction to (..., 1, 25, 25)
     cnn.add(Convolution2D(1, 2, 2, border_mode='same',
@@ -89,15 +89,15 @@ def build_generator(latent_size):
     loc.add(Dense(512, input_dim=latent_size,
                   activation='tanh', init='glorot_normal'))
 
-    loc.add(Dropout(0.3))
+    # loc.add(Dropout(0.3))
 
     loc.add(Dense(1024, activation='relu'))
-    loc.add(Dropout(0.3))
+    # loc.add(Dropout(0.3))
 
     loc.add(Dense(1024, activation='relu'))
-    loc.add(Dropout(0.3))
+    # loc.add(Dropout(0.3))
 
-    loc.add(Dense(25 ** 2, activation='sigmoid', init='glorot_normal'))
+    loc.add(Dense(25 ** 2, activation='tanh', init='glorot_normal'))
     loc.add(Reshape((1, 25, 25)))
 
 #    cnn.add(Activation('relu'))
@@ -113,7 +113,7 @@ def build_generator(latent_size):
     # hadamard product between z-space and a class conditional embedding
     h = merge([latent, cls], mode='mul')
 
-    fake_image = merge([cnn(h), loc(h)], mode='mul')
+    fake_image = merge([cnn(h), loc(h)], mode='max')
 
     return Model(input=[latent, image_class], output=fake_image)
 
@@ -222,8 +222,8 @@ if __name__ == '__main__':
     X_test = np.expand_dims(X_test, axis=1)
     nb_train, nb_test = X_train.shape[0], X_test.shape[0]
 
-    X_train = (X_train.astype(np.float32) - 88) / 88
-    X_test = (X_test.astype(np.float32) - 88) / 88
+    X_train = -1 * ((X_train.astype(np.float32) - 88) / 88)
+    X_test = -1 * ((X_test.astype(np.float32) - 88) / 88)
 
     for epoch in range(nb_epochs):
         print "Epoch {} of {}".format(epoch + 1, nb_epochs)
