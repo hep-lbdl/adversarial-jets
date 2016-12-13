@@ -68,7 +68,7 @@ def build_generator(latent_size):
 
     # upsample to (..., 64, 14, 14)
     cnn.add(UpSampling2D(size=(2, 2)))
-    cnn.add(Convolution2D(256, 5, 5, border_mode='same', init='glorot_normal'))
+    cnn.add(Convolution2D(256, 4, 4, border_mode='same', init='glorot_normal'))
     cnn.add(LeakyReLU())
     cnn.add(Dropout(0.3))
 
