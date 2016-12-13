@@ -119,7 +119,7 @@ def build_generator(latent_size):
     # hadamard product between z-space and a class conditional embedding
     h = merge([latent, cls], mode='mul')
 
-    fake_image = merge([cnn(h), loc(h)], mode='sum')
+    fake_image = merge([cnn(h), loc(h)], mode='max')
 
     return Model(input=[latent, image_class], output=fake_image)
 
