@@ -102,8 +102,7 @@ def build_generator(latent_size):
                     init='glorot_normal', transform_bias=-8))
     loc.add(Dropout(0.3))
 
-    loc.add(Dense(25 ** 2, input_dim=latent_size,
-                  activation='sigmoid', init='glorot_normal'))
+    loc.add(Dense(25 ** 2, activation='sigmoid', init='glorot_normal'))
     loc.add(Reshape((1, 25, 25)))
 
 #    cnn.add(Activation('relu'))
