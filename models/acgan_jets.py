@@ -103,7 +103,7 @@ def build_generator(latent_size):
     loc.add(Dropout(0.3))
 
     loc.add(Dense(25 ** 2, input_dim=latent_size,
-                  activation='tanh', init='glorot_normal'))
+                  activation='sigmoid', init='glorot_normal'))
     loc.add(Reshape((1, 25, 25)))
 
 #    cnn.add(Activation('relu'))
@@ -119,7 +119,7 @@ def build_generator(latent_size):
     # hadamard product between z-space and a class conditional embedding
     h = merge([latent, cls], mode='mul')
 
-    fake_image = merge([cnn(h), loc(h)], mode='max')
+    fake_image = merge([cnn(h), loc(h)], mode='mul')
 
     return Model(input=[latent, image_class], output=fake_image)
 
