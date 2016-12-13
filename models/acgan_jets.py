@@ -10,7 +10,7 @@ from PIL import Image
 from keras.backend import set_image_dim_ordering
 from keras.datasets import mnist
 from keras.initializations import normal as _normal_init
-from keras.layers import Input, Dense, Reshape, Flatten, Embedding, merge, Dropout, Activation
+from keras.layers import Input, Dense, Reshape, Flatten, Embedding, merge, Dropout, Activation, Highway
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.convolutional import UpSampling2D, Convolution2D, MaxPooling2D
 from keras.models import Sequential, Model
