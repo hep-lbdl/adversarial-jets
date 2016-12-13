@@ -8,6 +8,7 @@ Titan X Maxwell Arch. (TH) ~ 1.5 min / epoch
 from PIL import Image
 
 from keras.backend import set_image_dim_ordering
+import keras.backend as K
 from keras.datasets import mnist
 from keras.initializations import normal as _normal_init
 from keras.layers import Input, Dense, Reshape, Flatten, Embedding, merge, Dropout, Activation, Highway, Layer
