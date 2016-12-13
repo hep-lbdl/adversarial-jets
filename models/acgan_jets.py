@@ -29,6 +29,33 @@ def adam_config():
 
 
 def build_generator(latent_size):
+    # cnn = Sequential()
+
+    # cnn.add(Dense(1024, input_dim=latent_size))
+    # cnn.add(LeakyReLU())
+    # cnn.add(Dense(128 * 7 * 7))
+    # cnn.add(LeakyReLU())
+    # cnn.add(Reshape((128, 7, 7)))
+
+    # # upsample to (..., 64, 14, 14)
+    # cnn.add(UpSampling2D(size=(2, 2)))
+    # cnn.add(Convolution2D(256, 5, 5, border_mode='same', init='glorot_normal'))
+    # cnn.add(LeakyReLU())
+
+    # # upsample to (..., 64, 28, 28)
+    # cnn.add(UpSampling2D(size=(2, 2)))
+
+    # # valid conv to (..., 32, 25, 25)
+    # cnn.add(Convolution2D(128, 5, 5, border_mode='same', init='glorot_normal'))
+    # cnn.add(LeakyReLU())
+
+    # nb_out_dims = 4
+    # # take a channel axis reduction to (..., 1, 25, 25)
+    # cnn.add(Convolution2D(nb_out_dims, 4, 4,
+    #                       border_mode='valid', init='glorot_normal'))
+    # cnn.add(LeakyReLU())
+    # cnn.add(Convolution2D(1, 1, 1, border_mode='same', bias=False,
+    #                       init='glorot_normal', activation='tanh'))
     cnn = Sequential()
 
     cnn.add(Dense(1024, input_dim=latent_size))
@@ -46,17 +73,12 @@ def build_generator(latent_size):
     cnn.add(UpSampling2D(size=(2, 2)))
 
     # valid conv to (..., 32, 25, 25)
-    cnn.add(Convolution2D(128, 5, 5, border_mode='same', init='glorot_normal'))
+    cnn.add(Convolution2D(128, 4, 4, border_mode='valid', init='glorot_normal'))
     cnn.add(LeakyReLU())
 
-    nb_out_dims = 4
     # take a channel axis reduction to (..., 1, 25, 25)
-    cnn.add(Convolution2D(nb_out_dims, 4, 4,
-                          border_mode='valid', init='glorot_normal'))
-    cnn.add(LeakyReLU())
-    cnn.add(Convolution2D(1, 1, 1, border_mode='same', bias=False,
+    cnn.add(Convolution2D(1, 2, 2, border_mode='same',
                           init='glorot_normal', activation='tanh'))
-
 
 #    cnn.add(Activation('relu'))
 
