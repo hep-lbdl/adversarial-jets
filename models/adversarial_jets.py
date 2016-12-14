@@ -24,6 +24,9 @@ np.random.seed(1337)
 set_image_dim_ordering('th')
 
 
+PREFIX = ''
+
+
 def adam_config():
     # parameters suggested in [PAPER LINK]
     return Adam(lr=0.0002, beta_1=0.5, beta_2=0.999, epsilon=1e-08)
@@ -58,7 +61,7 @@ class ConstrainedReLU(Layer):
         return dict(list(base_config.items()) + list(config.items()))
 
 
-def build_generator(latent_size):
+def build_generator(latent_size, return_intermediate=False):
 
     cnn = Sequential()
 
@@ -85,8 +88,8 @@ def build_generator(latent_size):
     # cnn.add(Dropout(0.3))
 
     # take a channel axis reduction to (..., 1, 25, 25)
-    cnn.add(Convolution2D(1, 3, 3, border_mode='same',
-                          init='glorot_normal', activation='sigmoid'))
+    cnn.add(Convolution2D(1, 3, 3, border_mode='same', activation='hard_sigmoid',
+                          init='glorot_normal'))
 
     loc = Sequential()
 
@@ -94,12 +97,13 @@ def build_generator(latent_size):
                   activation='tanh', init='glorot_normal'))
     loc.add(LeakyReLU())
 
-    loc.add(Dense(1024, activation='relu'))
+    loc.add(Dense(1024))
     loc.add(LeakyReLU())
     # loc.add(Dropout(0.3))
 
-    loc.add(Dense(25 ** 2, activation='relu', init='glorot_normal'))
+    loc.add(Dense(25 ** 2, init='glorot_normal'))
     loc.add(Reshape((1, 25, 25)))
+    loc.add(ThresholdedReLU(0.99))
 
     bkg = Sequential()
 
@@ -128,9 +132,12 @@ def build_generator(latent_size):
     # hadamard product between z-space and a class conditional embedding
     h = merge([latent, cls], mode='mul')
 
-    fake_image = merge([cnn(h), loc(h), bkg(h)], mode='ave')
+    cnn_img, loc_img, bkg_img = cnn(h), loc(h), bkg(h)
+    fake_image = merge([cnn_img, loc_img, bkg_img], mode='ave')
 
-    return Model(input=[latent, image_class], output=fake_image)
+    if not return_intermediate:
+        return Model(input=[latent, image_class], output=fake_image)
+    return Model(input=[latent, image_class], output=fake_image), (latent, image_class), (cnn_img, loc_img, bkg_img)
 
 
 def build_discriminator():
@@ -357,9 +364,9 @@ if __name__ == '__main__':
 
         # save weights every epoch
         generator.save_weights(
-            'params_generator_epoch_{0:03d}.hdf5'.format(epoch), True)
+            'params_generator_{}_epoch_{0:03d}.hdf5'.format(PREFIX, epoch), True)
         discriminator.save_weights(
-            'params_discriminator_epoch_{0:03d}.hdf5'.format(epoch), True)
+            'params_discriminator_{}_epoch_{0:03d}.hdf5'.format(PREFIX, epoch), True)
 
         # generate some digits to display
         noise = np.random.uniform(-1, 1, (100, latent_size))
