@@ -157,6 +157,33 @@ def build_generator(latent_size, return_intermediate=False):
 def build_discriminator():
     # build a relatively standard conv net
 
+    clf = Sequential()
+    clf.add(Flatten(input_shape=(1, 25, 25)))
+
+    # clf.add(Dense(512, init='he_uniform'))
+    # clf.add(LeakyReLU())
+    # clf.add(Dropout(0.3))
+
+    clf.add(Dense(512, init='he_uniform'))
+    clf.add(LeakyReLU())
+    clf.add(Dropout(0.3))
+
+    clf.add(Dense(1024, init='he_uniform'))
+    clf.add(LeakyReLU())
+    clf.add(Dropout(0.3))
+
+    # clf.add(Dense(512, init='he_uniform'))
+    # clf.add(LeakyReLU())
+    # clf.add(Dropout(0.3))
+
+    clf.add(Dense(512, init='he_uniform'))
+    clf.add(LeakyReLU())
+    clf.add(Dropout(0.3))
+
+    clf.add(Dense(256, init='he_uniform'))
+    clf.add(LeakyReLU())
+    clf.add(Dropout(0.2))
+
     dnn = Sequential()
     dnn.add(Flatten(input_shape=(1, 25, 25)))
 
@@ -212,7 +239,8 @@ def build_discriminator():
     # fake output tracks binary fake / not-fake, and the auxiliary requires
     # reconstruction of latent features, in this case, labels
     fake = Dense(1, activation='sigmoid', name='generation')(features)
-    aux = Dense(1, activation='sigmoid', name='auxiliary')(features)
+
+    aux = Dense(1, activation='sigmoid', name='auxiliary')(clf(image))
 
     return Model(input=image, output=[fake, aux])
 
