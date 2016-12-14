@@ -94,12 +94,14 @@ def build_generator(latent_size, return_intermediate=False):
     loc = Sequential()
 
     loc.add(Dense(512, input_dim=latent_size,
-                  activation='linear',
                   init='glorot_normal'
                   ))
     loc.add(LeakyReLU())
 
-    loc.add(Dense(1024))
+    loc.add(Dense(1024, init='glorot_normal'))
+    loc.add(LeakyReLU())
+
+    loc.add(Dense(1024, init='glorot_normal'))
     loc.add(LeakyReLU())
     # loc.add(Dropout(0.3))
 
@@ -116,7 +118,10 @@ def build_generator(latent_size, return_intermediate=False):
                   init='glorot_normal'))
     bkg.add(LeakyReLU())
 
-    bkg.add(Dense(1024))
+    bkg.add(Dense(1024, init='glorot_normal'))
+    bkg.add(LeakyReLU())
+
+    bkg.add(Dense(1024, init='glorot_normal'))
     bkg.add(LeakyReLU())
     # bkg.add(Dropout(0.3))
 
@@ -163,11 +168,15 @@ def build_discriminator():
     dnn.add(LeakyReLU())
     dnn.add(Dropout(0.3))
 
+    dnn.add(Dense(1024, init='he_uniform'))
+    dnn.add(LeakyReLU())
+    dnn.add(Dropout(0.3))
+
     # dnn.add(Dense(512, init='he_uniform'))
     # dnn.add(LeakyReLU())
     # dnn.add(Dropout(0.3))
 
-    dnn.add(Dense(256, init='he_uniform'))
+    dnn.add(Dense(512, init='he_uniform'))
     dnn.add(LeakyReLU())
     dnn.add(Dropout(0.3))
 
@@ -208,7 +217,7 @@ def build_discriminator():
     return Model(input=image, output=[fake, aux])
 
 if __name__ == '__main__':
-    nb_epochs = 50
+    nb_epochs = 100
     batch_size = 100
     latent_size = 256
     nb_labels = 2
