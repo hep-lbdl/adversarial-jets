@@ -281,12 +281,12 @@ if __name__ == '__main__':
     d = np.load('/home/lukedeo/scratch/data/gan/jetimages.npy', mmap_mode='r')
     ix = range(d.shape[0])
     np.random.shuffle(ix)
-    d = np.array(d[ix][:90000])
+    d = np.array(d[ix][:2000000])
     X = d['image']
     y = d['signal']
 
     from sklearn.cross_validation import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.7)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.95)
     X_train = np.expand_dims(X_train, axis=1)
     X_test = np.expand_dims(X_test, axis=1)
     nb_train, nb_test = X_train.shape[0], X_test.shape[0]
