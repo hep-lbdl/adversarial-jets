@@ -63,54 +63,60 @@ class ConstrainedReLU(Layer):
 
 def build_generator(latent_size, return_intermediate=False):
 
-    cnn = Sequential()
+    # cnn = Sequential()
 
-    cnn.add(Dense(1024, input_dim=latent_size))
-    cnn.add(LeakyReLU())
-    # cnn.add(Dropout(0.3))
-    cnn.add(Dense(128 * 7 * 7))
-    cnn.add(LeakyReLU())
-    # cnn.add(Dropout(0.3))
-    cnn.add(Reshape((128, 7, 7)))
+    # cnn.add(Dense(1024, input_dim=latent_size))
+    # cnn.add(LeakyReLU())
+    # # cnn.add(Dropout(0.3))
+    # cnn.add(Dense(128 * 7 * 7))
+    # cnn.add(LeakyReLU())
+    # # cnn.add(Dropout(0.3))
+    # cnn.add(Reshape((128, 7, 7)))
 
-    # upsample to (..., 64, 14, 14)
-    cnn.add(UpSampling2D(size=(2, 2)))
-    cnn.add(Convolution2D(256, 5, 5, border_mode='same', init='glorot_normal'))
-    cnn.add(LeakyReLU())
-    # cnn.add(Dropout(0.3))
+    # # upsample to (..., 64, 14, 14)
+    # cnn.add(UpSampling2D(size=(2, 2)))
+    # cnn.add(Convolution2D(256, 5, 5, border_mode='same', init='glorot_normal'))
+    # cnn.add(LeakyReLU())
+    # # cnn.add(Dropout(0.3))
 
-    # upsample to (..., 64, 28, 28)
-    cnn.add(UpSampling2D(size=(2, 2)))
+    # # upsample to (..., 64, 28, 28)
+    # cnn.add(UpSampling2D(size=(2, 2)))
 
-    # valid conv to (..., 32, 25, 25)
-    cnn.add(Convolution2D(128, 4, 4, border_mode='valid', init='glorot_normal'))
-    cnn.add(LeakyReLU())
-    # cnn.add(Dropout(0.3))
+    # # valid conv to (..., 32, 25, 25)
+    # cnn.add(Convolution2D(128, 4, 4, border_mode='valid', init='glorot_normal'))
+    # cnn.add(LeakyReLU())
+    # # cnn.add(Dropout(0.3))
 
-    # take a channel axis reduction to (..., 1, 25, 25)
-    cnn.add(Convolution2D(1, 3, 3, border_mode='same', activation='relu',
-                          init='glorot_normal'))
+    # # take a channel axis reduction to (..., 1, 25, 25)
+    # cnn.add(Convolution2D(1, 3, 3, border_mode='same', activation='relu',
+                          # init = 'glorot_normal'))
 
     loc = Sequential()
 
     loc.add(Dense(512, input_dim=latent_size,
-                  activation='tanh', init='glorot_normal'))
+                  activation='linear',
+                  init='glorot_normal'
+                  ))
     loc.add(LeakyReLU())
 
     loc.add(Dense(1024))
     loc.add(LeakyReLU())
     # loc.add(Dropout(0.3))
 
-    loc.add(Dense(25 ** 2, init='glorot_normal', activation='relu'))
+    loc.add(Dense(25 ** 2,
+                  activation='relu',
+                  init='glorot_normal'
+                  ))
     loc.add(Reshape((1, 25, 25)))
 
     bkg = Sequential()
 
     bkg.add(Dense(512, input_dim=latent_size,
-                  activation='tanh', init='glorot_normal'))
+                  # activation='tanh',
+                  init='glorot_normal'))
     bkg.add(LeakyReLU())
 
-    bkg.add(Dense(1024, activation='relu'))
+    bkg.add(Dense(1024))
     bkg.add(LeakyReLU())
     # bkg.add(Dropout(0.3))
 
@@ -131,12 +137,16 @@ def build_generator(latent_size, return_intermediate=False):
     # hadamard product between z-space and a class conditional embedding
     h = merge([latent, cls], mode='mul')
 
-    cnn_img, loc_img, bkg_img = cnn(h), loc(h), bkg(h)
-    fake_image = merge([cnn_img, loc_img, bkg_img], mode='ave')
+    # cnn_img, loc_img, bkg_img = cnn(h), loc(h), bkg(h)
+    loc_img, bkg_img = loc(h), bkg(h)
+    # fake_image = merge([cnn_img, loc_img, bkg_img], mode='ave')
+    fake_image = merge([loc_img, bkg_img], mode='ave')
 
     if not return_intermediate:
         return Model(input=[latent, image_class], output=fake_image)
-    return Model(input=[latent, image_class], output=fake_image), (latent, image_class), (cnn_img, loc_img, bkg_img)
+    # return Model(input=[latent, image_class], output=fake_image), (latent,
+    # image_class), (cnn_img, loc_img, bkg_img)
+    return Model(input=[latent, image_class], output=fake_image), (latent, image_class), (loc_img, bkg_img)
 
 
 def build_discriminator():
@@ -226,7 +236,7 @@ if __name__ == '__main__':
     combined.compile(adam_config(), ['binary_crossentropy',
                                      'binary_crossentropy'])
 
-    #discriminator.trainable = True
+    # discriminator.trainable = True
 
     # get our mnist data, and force it to be of shape (..., 1, 28, 28) with
     # range [-1, 1]
@@ -264,7 +274,7 @@ if __name__ == '__main__':
             # ------------------------
             # JUST GENERATE FAKE IMAGES WITH CURRENT STATE OF G
             # generate a new batch of noise
-            #noise = np.random.uniform(-1, 1, (batch_size, latent_size))
+            # noise = np.random.uniform(-1, 1, (batch_size, latent_size))
             noise = np.random.normal(0, 1, (batch_size, latent_size))
 
             # get a batch of real images
@@ -308,7 +318,7 @@ if __name__ == '__main__':
         # evaluate the testing loss
 
         # generate a new batch of noise
-        #noise = np.random.uniform(-1, 1, (nb_test, latent_size))
+        # noise = np.random.uniform(-1, 1, (nb_test, latent_size))
         noise = np.random.normal(0, 1, (nb_test, latent_size))
 
         # get a batch of real images
@@ -332,7 +342,7 @@ if __name__ == '__main__':
             X, [y, aux_y], verbose=False)
 
         # make new noise
-        #noise = np.random.uniform(-1, 1, (2 * nb_test, latent_size))
+        # noise = np.random.uniform(-1, 1, (2 * nb_test, latent_size))
         noise = np.random.normal(0, 1, (2 * nb_test, latent_size))
         sampled_labels = np.random.randint(0, nb_labels, 2 * nb_test)
 

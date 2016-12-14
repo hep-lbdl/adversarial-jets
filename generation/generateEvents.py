@@ -129,6 +129,8 @@ if __name__ == '__main__':
     parser.add_argument('--pt_hat_min', type=float, default=100)
     parser.add_argument('--pt_hat_max', type=float, default=500)
     parser.add_argument('--bosonmass', type=float, default=800)
+    parser.add_argument('--executable', '-e', action="store",
+                        help='alternative path to the jet-image-maker executable', required=True)
     # parser.add_argument('--verbose', type=float, default=800)
     args = parser.parse_args()
 

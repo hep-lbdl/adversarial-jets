@@ -11,6 +11,8 @@ INC          := include
 LIB          := $(CURDIR)/lib
 OUTPUT       := bin
 
+MAKE         := make
+
 NSUBDIR      := Nsubjettiness
 CMDPARSER    := cmd-parser
 
@@ -69,12 +71,12 @@ ALL_EXE_SRC   := $(wildcard $(SRC)/$(EXE_PREFIX)*.cc)
 ALL_EXE       := $(notdir $(ALL_EXE_SRC:%.cc=%))
 ALL_EXE_PATHS := $(ALL_EXE:%=$(OUTPUT)/%)
 
-EXTERNALS  := nsubjettiness
+EXTERNALS  := nsj
 
 all: $(EXTERNALS) $(ALL_EXE_PATHS)
 	@echo "jet-images build sucessful."
 
-nsubjettiness:
+nsj:
 	@echo "Building $@"
 	@$(MAKE) -C $(NSUBDIR)
 
@@ -93,8 +95,6 @@ $(BUILD)/%.o: %.cc
 
 # use auto dependency generation
 DEP = $(BUILD)
-
-
 
 DEPTARGSTR = -MT $(BUILD)/$*.o -MT $(DEP)/$*.d
 $(DEP)/%.d: %.cc
