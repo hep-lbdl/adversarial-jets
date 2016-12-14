@@ -88,7 +88,7 @@ def build_generator(latent_size, return_intermediate=False):
     # cnn.add(Dropout(0.3))
 
     # take a channel axis reduction to (..., 1, 25, 25)
-    cnn.add(Convolution2D(1, 3, 3, border_mode='same', activation='hard_sigmoid',
+    cnn.add(Convolution2D(1, 3, 3, border_mode='same', activation='relu',
                           init='glorot_normal'))
 
     loc = Sequential()
@@ -101,9 +101,8 @@ def build_generator(latent_size, return_intermediate=False):
     loc.add(LeakyReLU())
     # loc.add(Dropout(0.3))
 
-    loc.add(Dense(25 ** 2, init='glorot_normal'))
+    loc.add(Dense(25 ** 2, init='glorot_normal', activation='relu'))
     loc.add(Reshape((1, 25, 25)))
-    loc.add(ThresholdedReLU(0.99))
 
     bkg = Sequential()
 
@@ -364,9 +363,9 @@ if __name__ == '__main__':
 
         # save weights every epoch
         generator.save_weights(
-            'params_generator_{}_epoch_{0:03d}.hdf5'.format(PREFIX, epoch), True)
+            'params_generator_epoch_{0:03d}.hdf5'.format(epoch), True)
         discriminator.save_weights(
-            'params_discriminator_{}_epoch_{0:03d}.hdf5'.format(PREFIX, epoch), True)
+            'params_discriminator_epoch_{0:03d}.hdf5'.format(epoch), True)
 
         # generate some digits to display
         noise = np.random.uniform(-1, 1, (100, latent_size))
