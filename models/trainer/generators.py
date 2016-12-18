@@ -56,7 +56,7 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     cnn = Sequential()
 
-    cnn.add(Dense(1024, input_dim=2 * latent_size))
+    cnn.add(Dense(1024, input_dim=latent_size))
     cnn.add(LeakyReLU())
     # cnn.add(Dropout(0.3))
     cnn.add(Dense(128 * 7 * 7))
@@ -76,7 +76,7 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     cnn.add(UpSampling2D(size=(2, 2)))
 
     # valid conv to (..., 32, 25, 25)
-    cnn.add(LocallyConnected2D(4, 4, 4, border_mode='valid', init='glorot_normal'))
+    cnn.add(Convolution2D(32, 4, 4, border_mode='valid', init='glorot_normal'))
     cnn.add(LeakyReLU())
     # cnn.add(Dropout(0.3))
 
@@ -86,7 +86,7 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     loc = Sequential()
 
-    loc.add(Dense(512, input_dim=2 * latent_size, init='glorot_normal'))
+    loc.add(Dense(512, input_dim=latent_size, init='glorot_normal'))
     loc.add(LeakyReLU())
 
     loc.add(Dense(1024, init='glorot_normal'))
@@ -109,7 +109,8 @@ def locally_connected_generator(latent_size, return_intermediate=False):
                               init='glorot_normal')(image_class))
 
     # hadamard product between z-space and a class conditional embedding
-    h = merge([latent, cls], mode='concat', concat_axis=-1)
+    # h = merge([latent, cls], mode='concat', concat_axis=-1)
+    h = merge([latent, cls], mode='mul')
 
     cnn_img, loc_img = cnn(h), loc(h)
 
