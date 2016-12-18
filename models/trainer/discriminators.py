@@ -8,7 +8,7 @@ from keras.optimizers import Adam
 from keras.utils.generic_utils import Progbar
 
 
-from .tensor import minibatch_discriminator, minibatch_output_shape, DenseTensor
+from tensor import minibatch_discriminator, minibatch_output_shape, DenseTensor
 
 
 K.set_image_dim_ordering('tf')
