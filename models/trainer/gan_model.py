@@ -19,7 +19,8 @@ from keras.optimizers import Adam
 from keras.utils.generic_utils import Progbar
 
 from generators import locally_connected_generator as build_generator
-from discriminators import two_channel_seperate_discriminator as build_discriminator
+# from discriminators import two_channel_seperate_discriminator as build_discriminator
+from discriminators import two_channel_discriminator as build_discriminator
 
 import numpy as np
 
@@ -32,7 +33,7 @@ if __name__ == '__main__':
     # batch and latent size taken from the paper
     nb_epochs = 50
     batch_size = 100
-    latent_size = 100
+    latent_size = 256
 
     nb_classes = 2
 
@@ -41,13 +42,14 @@ if __name__ == '__main__':
     adam_beta_1 = 0.5
 
     # build the discriminator
-    discriminator, aux_clf = build_discriminator(return_aux=True)
+    # discriminator, aux_clf = build_discriminator(return_aux=True)
+    discriminator = build_discriminator()
     discriminator.compile(
         optimizer=Adam(lr=adam_lr, beta_1=adam_beta_1),
         loss=['binary_crossentropy', 'binary_crossentropy']
     )
 
-    aux_clf.compile(optimizer=Adam(), loss='binary_crossentropy')
+    # aux_clf.compile(optimizer=Adam(), loss='binary_crossentropy')
 
     # build the generator
     generator = build_generator(latent_size)
@@ -102,8 +104,8 @@ if __name__ == '__main__':
             progress_bar.update(index)
 
             # get the auxiliary classifier working a bit first
-            sel = np.random.choice(nb_train, size=2 * batch_size, replace=False)
-            _ = aux_clf.train_on_batch(X_train[sel], y_train[sel])
+            # sel = np.random.choice(nb_train, size=2 * batch_size, replace=False)
+            # _ = aux_clf.train_on_batch(X_train[sel], y_train[sel])
 
             # generate a new batch of noise
             noise = np.random.normal(0, 1, (batch_size, latent_size))
