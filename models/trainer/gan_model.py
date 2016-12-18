@@ -47,6 +47,8 @@ if __name__ == '__main__':
         loss=['binary_crossentropy', 'binary_crossentropy']
     )
 
+    aux_clf.compile(optimizer=Adam(), loss='binary_crossentropy')
+
     # build the generator
     generator = build_generator(latent_size)
     generator.compile(optimizer=Adam(lr=adam_lr, beta_1=adam_beta_1),
