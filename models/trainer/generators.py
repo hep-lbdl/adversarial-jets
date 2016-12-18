@@ -8,6 +8,8 @@ from keras.optimizers import Adam
 from keras.utils.generic_utils import Progbar
 import numpy as np
 
+K.set_image_dim_ordering('tf')
+
 
 def basic_generator(latent_size):
     # we will map a pair of (z, L), where z is a latent vector and L is a
@@ -60,14 +62,14 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     cnn.add(Dense(128 * 7 * 7))
     cnn.add(LeakyReLU())
     # cnn.add(Dropout(0.3))
-    cnn.add(Reshape((128, 7, 7)))
+    cnn.add(Reshape((7, 7, 128)))
 
     # upsample to (..., 64, 14, 14)
     cnn.add(UpSampling2D(size=(2, 2)))
-    # cnn.add(ZeroPadding2D(padding=(2, 2, 2, 2)))
+    cnn.add(ZeroPadding2D(padding=(2, 2, 2, 2)))
     cnn.add(LocallyConnected2D(4, 5, 5, border_mode='valid', init='glorot_normal'))
     cnn.add(LeakyReLU())
-    cnn.add(BatchNormalization(mode=2, axis=1))
+    cnn.add(BatchNormalization(mode=2, axis=-1))
     # cnn.add(Dropout(0.3))
 
     # upsample to (..., 64, 28, 28)
@@ -96,7 +98,7 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     # loc.add(Dropout(0.3))
 
     loc.add(Dense(25 ** 2, activation='relu', init='glorot_normal'))
-    loc.add(Reshape((1, 25, 25)))
+    loc.add(Reshape((25, 25, 1)))
 
     # this is the z space commonly refered to in GAN papers
     latent = Input(shape=(latent_size, ))

@@ -7,6 +7,8 @@ from keras.models import Sequential, Model
 from keras.optimizers import Adam
 from keras.utils.generic_utils import Progbar
 
+K.set_image_dim_ordering('tf')
+
 
 def basic_discriminator():
     # build a relatively standard conv net, with LeakyReLUs as suggested in
@@ -49,7 +51,7 @@ def basic_discriminator():
 def two_channel_discriminator():
 
     dnn = Sequential()
-    dnn.add(Flatten(input_shape=(1, 25, 25)))
+    dnn.add(Flatten(input_shape=(25, 25, 1)))
 
     # dnn.add(Dense(512, init='he_uniform'))
     # dnn.add(LeakyReLU())
@@ -74,19 +76,19 @@ def two_channel_discriminator():
 
     cnn = Sequential()
     cnn.add(Convolution2D(32, 7, 7, border_mode='same', subsample=(2, 2),
-                          input_shape=(1, 25, 25)))
+                          input_shape=(25, 25, 1)))
     cnn.add(LeakyReLU())
     cnn.add(Dropout(0.3))
 
     cnn.add(Convolution2D(64, 5, 5, border_mode='same', subsample=(2, 2)))
     cnn.add(LeakyReLU())
     cnn.add(Dropout(0.3))
-    cnn.add(BatchNormalization(mode=2, axis=1))
+    cnn.add(BatchNormalization(mode=2, axis=-1))
 
     cnn.add(Convolution2D(128, 3, 3, border_mode='same', subsample=(2, 2)))
     cnn.add(LeakyReLU())
     cnn.add(Dropout(0.3))
-    cnn.add(BatchNormalization(mode=2, axis=1))
+    cnn.add(BatchNormalization(mode=2, axis=-1))
 
     cnn.add(Convolution2D(256, 3, 3, border_mode='same', subsample=(2, 2)))
     cnn.add(LeakyReLU())
@@ -94,7 +96,7 @@ def two_channel_discriminator():
 
     cnn.add(Flatten())
 
-    image = Input(shape=(1, 25, 25))
+    image = Input(shape=(25, 25, 1))
 
     features = merge([dnn(image), cnn(image)], mode='concat', concat_axis=-1)
 
