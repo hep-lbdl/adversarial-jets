@@ -75,13 +75,13 @@ if __name__ == '__main__':
     d = np.load('/home/lukedeo/scratch/data/gan/jetimages.npy', mmap_mode='r')
     ix = list(range(d.shape[0]))
     np.random.shuffle(ix)
-    d = np.array(d[ix][:1000000])
+    d = np.array(d[ix][:800000])
     # d = np.array(d[ix])
     X = d['image']
     y = d['signal']
 
     from sklearn.cross_validation import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.99)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8)
     # -1 for tensorflow ordering, 1 for theano ordering
     X_train = np.expand_dims(X_train, axis=-1)
     X_test = np.expand_dims(X_test, axis=-1)
