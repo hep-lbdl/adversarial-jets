@@ -19,7 +19,7 @@ from keras.optimizers import Adam
 from keras.utils.generic_utils import Progbar
 
 from generators import locally_connected_generator as build_generator
-from discriminators import two_channel_discriminator as build_discriminator
+from discriminators import two_channel_seperate_discriminator as build_discriminator
 
 import numpy as np
 
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     adam_beta_1 = 0.5
 
     # build the discriminator
-    discriminator = build_discriminator()
+    discriminator, aux_clf = build_discriminator(just_aux=False)
     discriminator.compile(
         optimizer=Adam(lr=adam_lr, beta_1=adam_beta_1),
         loss=['binary_crossentropy', 'binary_crossentropy']
@@ -101,10 +101,7 @@ if __name__ == '__main__':
 
             # get the auxiliary classifier working a bit first
             sel = np.random.choice(nb_train, size=2 * batch_size, replace=False)
-            _ = discriminator.train_on_batch(
-                X_train[sel],
-                [np.random.randint(0, nb_classes, 2 * batch_size), y_train[sel]]
-            )
+            _ = aux_clf.train_on_batch(X_train[sel], y_train[sel])
 
             # generate a new batch of noise
             noise = np.random.normal(0, 1, (batch_size, latent_size))
