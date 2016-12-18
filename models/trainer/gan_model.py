@@ -41,7 +41,7 @@ if __name__ == '__main__':
     adam_beta_1 = 0.5
 
     # build the discriminator
-    discriminator, aux_clf = build_discriminator(just_aux=False)
+    discriminator, aux_clf = build_discriminator(return_aux=True)
     discriminator.compile(
         optimizer=Adam(lr=adam_lr, beta_1=adam_beta_1),
         loss=['binary_crossentropy', 'binary_crossentropy']

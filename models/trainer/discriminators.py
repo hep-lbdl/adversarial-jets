@@ -103,7 +103,7 @@ def two_channel_discriminator():
     return Model(input=image, output=[fake, aux])
 
 
-def two_channel_seperate_discriminator(just_aux=False):
+def two_channel_seperate_discriminator(return_aux=False):
 
     aux_net = Sequential()
     aux_net.add(Flatten(input_shape=(1, 25, 25)))
@@ -184,6 +184,6 @@ def two_channel_seperate_discriminator(just_aux=False):
     fake = Dense(1, activation='sigmoid', name='generation')(features)
     aux = Dense(1, activation='sigmoid', name='auxiliary')(aux_net(image))
 
-    if not just_aux:
+    if not return_aux:
         return Model(input=image, output=[fake, aux])
     return Model(input=image, output=[fake, aux]), Model(input=image, output=aux)
