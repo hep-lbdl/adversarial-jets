@@ -60,7 +60,7 @@ def two_channel_discriminator():
     dnn.add(Dense(512, init='he_uniform'))
     dnn.add(LeakyReLU())
     dnn.add(Dropout(0.3))
-    dnn.add(BatchNormalization(mode=2, axis=1))
+    # dnn.add(BatchNormalization(mode=2, axis=1))
 
     # dnn.add(Dense(512, init='he_uniform'))
     # dnn.add(LeakyReLU())

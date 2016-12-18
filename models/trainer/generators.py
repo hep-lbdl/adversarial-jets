@@ -69,7 +69,7 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     cnn.add(ZeroPadding2D(padding=(2, 2, 2, 2)))
     cnn.add(LocallyConnected2D(4, 5, 5, border_mode='valid', init='glorot_normal'))
     cnn.add(LeakyReLU())
-    cnn.add(BatchNormalization(mode=2, axis=-1))
+    # cnn.add(BatchNormalization(mode=2, axis=-1))
     # cnn.add(Dropout(0.3))
 
     # upsample to (..., 64, 28, 28)
@@ -91,7 +91,7 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     loc.add(Dense(1024, init='glorot_normal'))
     loc.add(LeakyReLU())
-    loc.add(BatchNormalization(mode=2, axis=1))
+    # loc.add(BatchNormalization(mode=2, axis=1))
 
     loc.add(Dense(1024, init='glorot_normal'))
     loc.add(LeakyReLU())
