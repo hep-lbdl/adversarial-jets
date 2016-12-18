@@ -1,6 +1,6 @@
 import keras.backend as K
 from keras.datasets import mnist
-from keras.layers import Input, Dense, Reshape, Flatten, Embedding, merge, Dropout, ZeroPadding2D
+from keras.layers import Input, Dense, Reshape, Flatten, Embedding, merge, Dropout, ZeroPadding2D, LocallyConnected2D
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.convolutional import UpSampling2D, Convolution2D
 from keras.models import Sequential, Model
