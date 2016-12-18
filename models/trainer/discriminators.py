@@ -1,6 +1,6 @@
 import keras.backend as K
 from keras.datasets import mnist
-from keras.layers import Input, Dense, Reshape, Flatten, Embedding, merge, Dropout
+from keras.layers import Input, Dense, Reshape, Flatten, Embedding, merge, Dropout, BatchNormalization
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.convolutional import UpSampling2D, Convolution2D
 from keras.models import Sequential, Model
@@ -58,6 +58,7 @@ def two_channel_discriminator():
     dnn.add(Dense(512, init='he_uniform'))
     dnn.add(LeakyReLU())
     dnn.add(Dropout(0.3))
+    dnn.add(BatchNormalization(mode=2, axis=1))
 
     # dnn.add(Dense(512, init='he_uniform'))
     # dnn.add(LeakyReLU())
@@ -72,18 +73,20 @@ def two_channel_discriminator():
     dnn.add(Dropout(0.2))
 
     cnn = Sequential()
-    cnn.add(Convolution2D(32, 3, 3, border_mode='same', subsample=(2, 2),
+    cnn.add(Convolution2D(32, 7, 7, border_mode='same', subsample=(2, 2),
                           input_shape=(1, 25, 25)))
     cnn.add(LeakyReLU())
     cnn.add(Dropout(0.3))
 
-    cnn.add(Convolution2D(64, 3, 3, border_mode='same', subsample=(2, 2)))
+    cnn.add(Convolution2D(64, 5, 5, border_mode='same', subsample=(2, 2)))
     cnn.add(LeakyReLU())
     cnn.add(Dropout(0.3))
+    cnn.add(BatchNormalization(mode=2, axis=1))
 
     cnn.add(Convolution2D(128, 3, 3, border_mode='same', subsample=(2, 2)))
     cnn.add(LeakyReLU())
     cnn.add(Dropout(0.3))
+    cnn.add(BatchNormalization(mode=2, axis=1))
 
     cnn.add(Convolution2D(256, 3, 3, border_mode='same', subsample=(2, 2)))
     cnn.add(LeakyReLU())
