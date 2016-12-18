@@ -75,7 +75,7 @@ if __name__ == '__main__':
     d = np.load('/home/lukedeo/scratch/data/gan/jetimages.npy', mmap_mode='r')
     ix = list(range(d.shape[0]))
     np.random.shuffle(ix)
-    d = np.array(d[ix][:800000])
+    d = np.array(d[ix][:90000])
     # d = np.array(d[ix])
     X = d['image']
     y = d['signal']
