@@ -50,7 +50,7 @@ def basic_generator(latent_size):
     return Model(input=[latent, image_class], output=fake_image)
 
 
-def locally_connected_generator(latent_size):
+def locally_connected_generator(latent_size, return_intermediate=False):
 
     cnn = Sequential()
 
