@@ -107,14 +107,14 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     cnn_img, loc_img = cnn(h), loc(h)
 
     # initialize this to flat prior between streams
-    # pointwise_reduce = LocallyConnected2D(1, 1, 1, bias=False,
-    #                                       weights=[np.ones((625, 2, 1)) / 2])
+    pointwise_reduce = LocallyConnected2D(1, 1, 1, bias=False,
+                                          weights=[np.ones((625, 2, 1)) / 2])
 
-    # # concat over the channel axis
-    # fake_image = pointwise_reduce(
-    #     merge([cnn_img, loc_img], mode='concat', concat_axis=1))
+    # concat over the channel axis
+    fake_image = pointwise_reduce(
+        merge([cnn_img, loc_img], mode='concat', concat_axis=1))
 
-    fake_image = merge([cnn_img, loc_img], mode='ave')
+    # fake_image = merge([cnn_img, loc_img], mode='ave')
 
     if not return_intermediate:
         return Model(input=[latent, image_class], output=fake_image)
