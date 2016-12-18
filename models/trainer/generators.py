@@ -115,7 +115,7 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     # initialize this to flat prior between streams
     pointwise_reduce = LocallyConnected2D(1, 1, 1, bias=False,
-                                          weights=[np.ones((625, 2, 1)) / 2])
+                                          weights=[np.ones((1250, 1, 1)) / 2])
 
     # concat over the channel axis
     fake_image = pointwise_reduce(
