@@ -1,11 +1,15 @@
 import keras.backend as K
 from keras.datasets import mnist
-from keras.layers import Input, Dense, Reshape, Flatten, Embedding, merge, Dropout, BatchNormalization
+from keras.layers import Input, Dense, Reshape, Flatten, Embedding, merge, Dropout, BatchNormalization, Lambda
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.convolutional import UpSampling2D, Convolution2D
 from keras.models import Sequential, Model
 from keras.optimizers import Adam
 from keras.utils.generic_utils import Progbar
+
+
+from .tensor import minibatch_discriminator, minibatch_output_shape, DenseTensor
+
 
 K.set_image_dim_ordering('tf')
 
@@ -48,7 +52,7 @@ def basic_discriminator():
     return Model(input=image, output=[fake, aux])
 
 
-def two_channel_discriminator():
+def two_channel_discriminator(batch_size=100):
 
     dnn = Sequential()
     dnn.add(Flatten(input_shape=(25, 25, 1)))
@@ -57,7 +61,7 @@ def two_channel_discriminator():
     # dnn.add(LeakyReLU())
     # dnn.add(Dropout(0.3))
 
-    dnn.add(Dense(512, init='he_uniform'))
+    dnn.add(Dense(1024, init='he_uniform'))
     dnn.add(LeakyReLU())
     dnn.add(Dropout(0.5))
     # dnn.add(BatchNormalization(mode=2, axis=1))
@@ -66,11 +70,11 @@ def two_channel_discriminator():
     # dnn.add(LeakyReLU())
     # dnn.add(Dropout(0.5))
 
-    dnn.add(Dense(256, init='he_uniform'))
+    dnn.add(Dense(1024, init='he_uniform'))
     dnn.add(LeakyReLU())
     dnn.add(Dropout(0.5))
 
-    dnn.add(Dense(256, init='he_uniform'))
+    dnn.add(Dense(512, init='he_uniform'))
     dnn.add(LeakyReLU())
     dnn.add(Dropout(0.5))
 
@@ -96,9 +100,28 @@ def two_channel_discriminator():
 
     cnn.add(Flatten())
 
+    cnn.add(Dense(512, init='he_uniform'))
+    cnn.add(LeakyReLU())
+    cnn.add(Dropout(0.5))
+
     image = Input(shape=(25, 25, 1))
 
     features = merge([dnn(image), cnn(image)], mode='concat', concat_axis=-1)
+
+    # nb of features to obtain
+    nb_features = 20
+
+    # dim of kernel space
+    vspace_dim = 100
+
+    cmp_space = DenseTensor(nb_features, vspace_dim)(features)
+
+    # concat the minibatch features with the normal ones
+    features = merge([
+        Lambda(minibatch_discriminator,
+               output_shape=minibatch_output_shape)(cmp_space),
+        features
+    ], mode='concat')
 
     # fake output tracks binary fake / not-fake, and the auxiliary requires
     # reconstruction of latent features, in this case, labels

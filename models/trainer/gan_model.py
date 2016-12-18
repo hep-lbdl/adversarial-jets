@@ -145,16 +145,24 @@ if __name__ == '__main__':
             # make new noise. we generate 2 * batch size here such that we have
             # the generator optimize over an identical number of images as the
             # discriminator
-            noise = np.random.normal(0, 1, (2 * batch_size, latent_size))
-            sampled_labels = np.random.randint(0, nb_classes, 2 * batch_size)
+            # noise = np.random.normal(0, 1, (2 * batch_size, latent_size))
+            # sampled_labels = np.random.randint(0, nb_classes, 2 * batch_size)
 
             # we want to train the genrator to trick the discriminator
             # For the generator, we want all the {fake, not-fake} labels to say
             # not-fake
-            trick = np.ones(2 * batch_size)
+            trick = np.ones(batch_size)
 
-            epoch_gen_loss.append(combined.train_on_batch(
-                [noise, sampled_labels.reshape((-1, 1))], [trick, sampled_labels]))
+            gen_losses = []
+            for _ in xrange(2):
+                noise = np.random.normal(0, 1, (batch_size, latent_size))
+                sampled_labels = np.random.randint(0, nb_classes, batch_size)
+                gen_losses.append(combined.train_on_batch(
+                    [noise, sampled_labels.reshape((-1, 1))], [trick, sampled_labels]))
+
+            epoch_gen_loss.append([
+                (a + b) / 2 for a, b in zip(*gen_losses)
+            ])
 
         print('\nTesting for epoch {}:'.format(epoch + 1))
 
@@ -174,7 +182,7 @@ if __name__ == '__main__':
 
         # see if the discriminator can figure itself out...
         discriminator_test_loss = discriminator.evaluate(
-            X, [y, aux_y], verbose=False)
+            X, [y, aux_y], verbose=False, batch_size=batch_size)
 
         discriminator_train_loss = np.mean(np.array(epoch_disc_loss), axis=0)
 
@@ -186,7 +194,7 @@ if __name__ == '__main__':
 
         generator_test_loss = combined.evaluate(
             [noise, sampled_labels.reshape((-1, 1))],
-            [trick, sampled_labels], verbose=False)
+            [trick, sampled_labels], verbose=False, batch_size=batch_size)
 
         generator_train_loss = np.mean(np.array(epoch_gen_loss), axis=0)
 
