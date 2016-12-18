@@ -112,7 +112,7 @@ def two_channel_discriminator(batch_size=100):
     nb_features = 20
 
     # dim of kernel space
-    vspace_dim = 100
+    vspace_dim = 500
 
     cmp_space = DenseTensor(nb_features, vspace_dim)(features)
 

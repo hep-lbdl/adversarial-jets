@@ -64,24 +64,17 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     # cnn.add(Dropout(0.3))
     cnn.add(Reshape((7, 7, 128)))
 
-    # upsample to (..., 64, 14, 14)
+    # upsample to (..., 14, 14)
     cnn.add(UpSampling2D(size=(2, 2)))
-    cnn.add(ZeroPadding2D(padding=(2, 2, 2, 2)))
-    cnn.add(LocallyConnected2D(4, 5, 5, border_mode='valid', init='glorot_normal'))
-    cnn.add(LeakyReLU())
-    # cnn.add(BatchNormalization(mode=2, axis=-1))
-    # cnn.add(Dropout(0.3))
+    cnn.add(Convolution2D(256, 5, 5, border_mode='same',
+                          activation='relu', init='glorot_normal'))
 
-    # upsample to (..., 64, 28, 28)
+    # upsample to (..., 28, 28)
     cnn.add(UpSampling2D(size=(2, 2)))
+    cnn.add(Convolution2D(128, 4, 4, border_mode='valid',
+                          activation='relu', init='glorot_normal'))
 
-    # valid conv to (..., 32, 25, 25)
-    cnn.add(Convolution2D(32, 4, 4, border_mode='valid', init='glorot_normal'))
-    cnn.add(LeakyReLU())
-    # cnn.add(Dropout(0.3))
-
-    # take a channel axis reduction to (..., 1, 25, 25)
-    cnn.add(Convolution2D(1, 2, 2, border_mode='same', bias=False,
+    cnn.add(Convolution2D(1, 5, 5, border_mode='same', bias=False,
                           init='glorot_normal', activation='relu'))
 
     loc = Sequential()
@@ -114,13 +107,15 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     cnn_img, loc_img = cnn(h), loc(h)
 
-    # initialize this to flat prior between streams
-    pointwise_reduce = LocallyConnected2D(1, 1, 1, bias=False,
-                                          weights=[np.ones((625, 2, 1)) / 2])
+    # # initialize this to flat prior between streams
+    # pointwise_reduce = LocallyConnected2D(1, 1, 1, bias=False,
+    #                                       weights=[np.ones((625, 2, 1)) / 2])
 
-    # concat over the channel axis
-    fake_image = pointwise_reduce(
-        merge([cnn_img, loc_img], mode='concat', concat_axis=-1))
+    # # concat over the channel axis
+    # fake_image = pointwise_reduce(
+    #     merge([cnn_img, loc_img], mode='concat', concat_axis=-1))
+
+    fake_image = merge([cnn_img, loc_img], mode='ave')
 
     # fake_image = merge([cnn_img, loc_img], mode='ave')
 
