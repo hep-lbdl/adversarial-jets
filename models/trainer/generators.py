@@ -6,6 +6,7 @@ from keras.layers.convolutional import UpSampling2D, Convolution2D
 from keras.models import Sequential, Model
 from keras.optimizers import Adam
 from keras.utils.generic_utils import Progbar
+import numpy as np
 
 
 def basic_generator(latent_size):
