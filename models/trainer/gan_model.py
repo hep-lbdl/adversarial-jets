@@ -98,6 +98,14 @@ if __name__ == '__main__':
 
         for index in range(nb_batches):
             progress_bar.update(index)
+
+            # get the auxiliary classifier working a bit first
+            sel = np.random.choice(nb_train, size=batch_size, replace=False)
+            _ = discriminator.train_on_batch(
+                X_train[sel],
+                [np.random.randint(0, nb_classes, batch_size), y_train[sel]]
+            )
+
             # generate a new batch of noise
             noise = np.random.normal(0, 1, (batch_size, latent_size))
 
