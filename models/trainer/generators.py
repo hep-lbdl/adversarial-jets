@@ -119,7 +119,7 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     # concat over the channel axis
     fake_image = pointwise_reduce(
-        merge([cnn_img, loc_img], mode='concat', concat_axis=1))
+        merge([cnn_img, loc_img], mode='concat', concat_axis=-1))
 
     # fake_image = merge([cnn_img, loc_img], mode='ave')
 
