@@ -63,58 +63,60 @@ def two_channel_discriminator(batch_size=100):
 
     dnn.add(Dense(1024, init='he_uniform'))
     dnn.add(LeakyReLU())
-    dnn.add(Dropout(0.5))
+    dnn.add(Dropout(0.3))
     # dnn.add(BatchNormalization(mode=2, axis=1))
 
     # dnn.add(Dense(512, init='he_uniform'))
     # dnn.add(LeakyReLU())
-    # dnn.add(Dropout(0.5))
+    # dnn.add(Dropout(0.3))
 
     dnn.add(Dense(1024, init='he_uniform'))
     dnn.add(LeakyReLU())
-    dnn.add(Dropout(0.5))
+    dnn.add(Dropout(0.3))
 
     dnn.add(Dense(512, init='he_uniform'))
     dnn.add(LeakyReLU())
-    dnn.add(Dropout(0.5))
+    dnn.add(Dropout(0.3))
 
     cnn = Sequential()
     cnn.add(Convolution2D(32, 7, 7, border_mode='same', subsample=(2, 2),
                           input_shape=(25, 25, 1)))
     cnn.add(LeakyReLU())
-    cnn.add(Dropout(0.5))
+    cnn.add(Dropout(0.3))
 
     cnn.add(Convolution2D(64, 5, 5, border_mode='same', subsample=(2, 2)))
     cnn.add(LeakyReLU())
-    cnn.add(Dropout(0.5))
+    cnn.add(Dropout(0.3))
     # cnn.add(BatchNormalization(mode=2, axis=-1))
 
     cnn.add(Convolution2D(128, 3, 3, border_mode='same', subsample=(2, 2)))
     cnn.add(LeakyReLU())
-    cnn.add(Dropout(0.5))
+    cnn.add(Dropout(0.3))
     # cnn.add(BatchNormalization(mode=2, axis=-1))
 
     cnn.add(Convolution2D(256, 3, 3, border_mode='same', subsample=(2, 2)))
     cnn.add(LeakyReLU())
-    cnn.add(Dropout(0.5))
+    cnn.add(Dropout(0.3))
 
     cnn.add(Flatten())
 
     cnn.add(Dense(512, init='he_uniform'))
     cnn.add(LeakyReLU())
-    cnn.add(Dropout(0.5))
+    cnn.add(Dropout(0.3))
 
     image = Input(shape=(25, 25, 1))
 
-    features = merge([dnn(image), cnn(image)], mode='concat', concat_axis=-1)
+    dnn_out = dnn(image)
+
+    features = merge([dnn_out, cnn(image)], mode='concat', concat_axis=-1)
 
     # nb of features to obtain
-    nb_features = 20
+    nb_features = 10
 
     # dim of kernel space
-    vspace_dim = 500
+    vspace_dim = 20
 
-    cmp_space = DenseTensor(nb_features, vspace_dim)(features)
+    cmp_space = DenseTensor(nb_features, vspace_dim)(dnn_out)
 
     # concat the minibatch features with the normal ones
     features = merge([
