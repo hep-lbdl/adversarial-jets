@@ -97,7 +97,7 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     h5 = Dense(25 ** 2, init='he_uniform')(h4)
     h5 = LeakyReLU()(h5)
     h5 = merge([h5, h4, h3, h2, h1], mode='sum')
-    im_out = Activation('relu')(h5)
+    im_out = Reshape((25, 25, 1))(Activation('relu')(h5))
 
     loc = Model(input=z, output=im_out)
 
