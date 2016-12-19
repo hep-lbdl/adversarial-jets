@@ -63,19 +63,19 @@ def two_channel_discriminator(batch_size=100):
 
     h2 = Dense(1024, init='he_uniform')(h1)
     h2 = LeakyReLU()(h2)
-    h2 = merge([Dropout(0.3)(h2), h1], mode='add')
+    h2 = merge([Dropout(0.3)(h2), h1], mode='sum')
 
     h3 = Dense(1024, init='he_uniform')(h2)
     h3 = LeakyReLU()(h3)
-    h3 = merge([Dropout(0.3)(h3), h2, h1], mode='add')
+    h3 = merge([Dropout(0.3)(h3), h2, h1], mode='sum')
 
     h4 = Dense(1024, init='he_uniform')(h3)
     h4 = LeakyReLU()(h4)
-    h4 = merge([Dropout(0.3)(h4), h3, h2, h1], mode='add')
+    h4 = merge([Dropout(0.3)(h4), h3, h2, h1], mode='sum')
 
     h5 = Dense(1024, init='he_uniform')(h4)
     h5 = LeakyReLU()(h5)
-    h5 = merge([Dropout(0.3)(h5), h4, h3, h2, h1], mode='add')
+    h5 = merge([Dropout(0.3)(h5), h4, h3, h2, h1], mode='sum')
 
     dnn_out = LeakyReLU()(Dense(512, init='he_uniform')(h5))
 
