@@ -79,8 +79,7 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     z = Input(shape=(latent_size, ))
 
-    x = Flatten()(image)
-    h1 = Dense(25 ** 2, input_dim=latent_size, init='he_uniform')(x)
+    h1 = Dense(25 ** 2, input_dim=latent_size, init='he_uniform')(z)
     h1 = LeakyReLU()(h1)
 
     h2 = Dense(25 ** 2, init='he_uniform')(h1)
