@@ -66,15 +66,12 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     # upsample to (..., 14, 14)
     cnn.add(UpSampling2D(size=(2, 2)))
-    cnn.add(Convolution2D(256, 5, 5, border_mode='same', init='he_uniform'))
+    cnn.add(Convolution2D(128, 5, 5, border_mode='same', init='he_uniform'))
     cnn.add(LeakyReLU())
 
     # upsample to (..., 28, 28)
     cnn.add(UpSampling2D(size=(2, 2)))
-    cnn.add(Convolution2D(128, 4, 4, border_mode='valid', init='he_uniform'))
-    cnn.add(LeakyReLU())
-
-    cnn.add(Convolution2D(64, 5, 5, border_mode='same', init='he_uniform'))
+    cnn.add(Convolution2D(64, 4, 4, border_mode='valid', init='he_uniform'))
     cnn.add(LeakyReLU())
 
     cnn.add(Convolution2D(1, 2, 2, border_mode='same', bias=False,
@@ -85,6 +82,8 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     loc.add(Dense(512, input_dim=latent_size, init='glorot_normal'))
     loc.add(LeakyReLU())
 
+    loc.add(Dense(1024, init='glorot_normal'))
+    loc.add(LeakyReLU())
     loc.add(Dense(1024, init='glorot_normal'))
     loc.add(LeakyReLU())
     # loc.add(BatchNormalization(mode=2, axis=1))
