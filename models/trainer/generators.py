@@ -71,10 +71,10 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     # upsample to (..., 28, 28)
     cnn.add(UpSampling2D(size=(2, 2)))
-    cnn.add(Convolution2D(64, 4, 4, border_mode='valid', init='he_uniform'))
+    cnn.add(Convolution2D(64, 3, 3, border_mode='valid', init='he_uniform'))
     cnn.add(LeakyReLU())
 
-    cnn.add(LocallyConnected2D(1, 2, 2, border_mode='same', bias=False,
+    cnn.add(LocallyConnected2D(1, 2, 2, border_mode='valid', bias=False,
                                init='glorot_normal', activation='relu'))
 
     loc = Sequential()
