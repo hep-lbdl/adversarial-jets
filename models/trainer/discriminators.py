@@ -54,29 +54,56 @@ def basic_discriminator():
 
 def two_channel_discriminator(batch_size=100):
 
-    dnn = Sequential()
-    dnn.add(Flatten(input_shape=(25, 25, 1)))
+    image = Input(shape=(25, 25, 1))
+
+    x = Flatten()(image)
+    h1 = Dense(1024, init='he_uniform')(x)
+    h1 = LeakyReLU()(h1)
+    h1 = Dropout(0.3)(h1)
+
+    h2 = Dense(1024, init='he_uniform')(h1)
+    h2 = LeakyReLU()(h2)
+    h2 = merge([Dropout(0.3)(h2), h1], mode='add')
+
+    h3 = Dense(1024, init='he_uniform')(h2)
+    h3 = LeakyReLU()(h3)
+    h3 = merge([Dropout(0.3)(h3), h2, h1], mode='add')
+
+    h4 = Dense(1024, init='he_uniform')(h3)
+    h4 = LeakyReLU()(h4)
+    h4 = merge([Dropout(0.3)(h4), h3, h2, h1], mode='add')
+
+    h5 = Dense(1024, init='he_uniform')(h4)
+    h5 = LeakyReLU()(h5)
+    h5 = merge([Dropout(0.3)(h5), h4, h3, h2, h1], mode='add')
+
+    dnn_out = LeakyReLU()(Dense(512, init='he_uniform')(h5))
+
+    dnn = Model(input=image, output=dnn_out)
+
+    # dnn = Sequential()
+    # dnn.add(Flatten(input_shape=(25, 25, 1)))
+
+    # # dnn.add(Dense(512, init='he_uniform'))
+    # # dnn.add(LeakyReLU())
+    # # dnn.add(Dropout(0.3))
+
+    # dnn.add(Dense(1024, init='he_uniform'))
+    # dnn.add(LeakyReLU())
+    # dnn.add(Dropout(0.3))
+    # # dnn.add(BatchNormalization(mode=2, axis=1))
+
+    # # dnn.add(Dense(512, init='he_uniform'))
+    # # dnn.add(LeakyReLU())
+    # # dnn.add(Dropout(0.3))
+
+    # dnn.add(Dense(1024, init='he_uniform'))
+    # dnn.add(LeakyReLU())
+    # dnn.add(Dropout(0.3))
 
     # dnn.add(Dense(512, init='he_uniform'))
     # dnn.add(LeakyReLU())
     # dnn.add(Dropout(0.3))
-
-    dnn.add(Dense(1024, init='he_uniform'))
-    dnn.add(LeakyReLU())
-    dnn.add(Dropout(0.3))
-    # dnn.add(BatchNormalization(mode=2, axis=1))
-
-    # dnn.add(Dense(512, init='he_uniform'))
-    # dnn.add(LeakyReLU())
-    # dnn.add(Dropout(0.3))
-
-    dnn.add(Dense(1024, init='he_uniform'))
-    dnn.add(LeakyReLU())
-    dnn.add(Dropout(0.3))
-
-    dnn.add(Dense(512, init='he_uniform'))
-    dnn.add(LeakyReLU())
-    dnn.add(Dropout(0.3))
 
     cnn = Sequential()
     cnn.add(Convolution2D(32, 3, 3, border_mode='same', input_shape=(25, 25, 1)))

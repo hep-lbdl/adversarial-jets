@@ -77,25 +77,50 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     cnn.add(LocallyConnected2D(1, 2, 2, border_mode='valid', bias=False,
                                init='glorot_normal', activation='relu'))
 
-    loc = Sequential()
+    z = Input(shape=(latent_size, ))
 
-    loc.add(Dense(512, input_dim=latent_size, init='he_uniform'))
-    loc.add(LeakyReLU())
+    x = Flatten()(image)
+    h1 = Dense(25 ** 2, input_dim=latent_size, init='he_uniform')(x)
+    h1 = LeakyReLU()(h1)
 
-    loc.add(Dense(1024, init='he_uniform'))
-    loc.add(LeakyReLU())
-    # loc.add(BatchNormalization(mode=2, axis=1))
+    h2 = Dense(25 ** 2, init='he_uniform')(h1)
+    h2 = LeakyReLU()(h2)
+    h2 = merge([h2, h1], mode='add')
+
+    h3 = Dense(25 ** 2, init='he_uniform')(h2)
+    h3 = LeakyReLU()(h3)
+    h3 = merge([h3, h2, h1], mode='add')
+
+    h4 = Dense(25 ** 2, init='he_uniform')(h3)
+    h4 = LeakyReLU()(h4)
+    h4 = merge([h4, h3, h2, h1], mode='add')
+
+    h5 = Dense(25 ** 2, init='he_uniform')(h4)
+    h5 = LeakyReLU()(h5)
+    h5 = merge([h5, h4, h3, h2, h1], mode='add')
+    im_out = Activation('relu')(h5)
+
+    loc = Model(input=z, output=im_out)
+
+    # loc = Sequential()
+
+    # loc.add(Dense(512, input_dim=latent_size, init='he_uniform'))
+    # loc.add(LeakyReLU())
 
     # loc.add(Dense(1024, init='he_uniform'))
     # loc.add(LeakyReLU())
-    # loc.add(Dropout(0.3))
+    # # loc.add(BatchNormalization(mode=2, axis=1))
 
-    loc.add(Dense(25 ** 2, init='he_uniform'))
-    loc.add(LeakyReLU())
-    loc.add(Reshape((25, 25, 1)))
+    # # loc.add(Dense(1024, init='he_uniform'))
+    # # loc.add(LeakyReLU())
+    # # loc.add(Dropout(0.3))
 
-    loc.add(Convolution2D(1, 2, 2, border_mode='same', init='he_uniform',
-                          activation='relu'))
+    # loc.add(Dense(25 ** 2, init='he_uniform'))
+    # loc.add(LeakyReLU())
+    # loc.add(Reshape((25, 25, 1)))
+
+    # loc.add(Convolution2D(1, 2, 2, border_mode='same', init='he_uniform',
+    #                       activation='relu'))
     # this is the z space commonly refered to in GAN papers
     latent = Input(shape=(latent_size, ))
 
