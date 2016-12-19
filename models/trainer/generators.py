@@ -66,16 +66,18 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     # upsample to (..., 14, 14)
     cnn.add(UpSampling2D(size=(2, 2)))
-    cnn.add(Convolution2D(256, 5, 5, border_mode='same',
-                          activation='tanh', init='glorot_normal'))
+    cnn.add(Convolution2D(256, 5, 5, border_mode='same', init='he_uniform'))
     cnn.add(LeakyReLU())
 
     # upsample to (..., 28, 28)
     cnn.add(UpSampling2D(size=(2, 2)))
-    cnn.add(Convolution2D(128, 4, 4, border_mode='valid',
-                          activation='tanh', init='glorot_normal'))
+    cnn.add(Convolution2D(128, 4, 4, border_mode='valid', init='he_uniform'))
+    cnn.add(LeakyReLU())
 
-    cnn.add(Convolution2D(1, 5, 5, border_mode='same', bias=False,
+    cnn.add(Convolution2D(64, 5, 5, border_mode='same', init='he_uniform'))
+    cnn.add(LeakyReLU())
+
+    cnn.add(Convolution2D(1, 2, 2, border_mode='same', bias=False,
                           init='glorot_normal', activation='relu'))
 
     loc = Sequential()
@@ -91,9 +93,12 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     # loc.add(LeakyReLU())
     # loc.add(Dropout(0.3))
 
-    loc.add(Dense(25 ** 2, activation='relu', init='glorot_normal'))
+    loc.add(Dense(25 ** 2, init='glorot_normal'))
+    loc.add(LeakyReLU())
     loc.add(Reshape((25, 25, 1)))
 
+    loc.add(Convolution2D(1, 3, 3, border_mode='same', init='glorot_normal',
+                          activation='relu'))
     # this is the z space commonly refered to in GAN papers
     latent = Input(shape=(latent_size, ))
 
