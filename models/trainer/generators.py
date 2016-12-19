@@ -74,29 +74,27 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     cnn.add(Convolution2D(64, 4, 4, border_mode='valid', init='he_uniform'))
     cnn.add(LeakyReLU())
 
-    cnn.add(Convolution2D(1, 2, 2, border_mode='same', bias=False,
-                          init='glorot_normal', activation='relu'))
+    cnn.add(LocallyConnected2D(1, 2, 2, border_mode='same', bias=False,
+                               init='glorot_normal', activation='relu'))
 
     loc = Sequential()
 
-    loc.add(Dense(512, input_dim=latent_size, init='glorot_normal'))
+    loc.add(Dense(512, input_dim=latent_size, init='he_uniform'))
     loc.add(LeakyReLU())
 
-    loc.add(Dense(1024, init='glorot_normal'))
-    loc.add(LeakyReLU())
-    loc.add(Dense(1024, init='glorot_normal'))
+    loc.add(Dense(1024, init='he_uniform'))
     loc.add(LeakyReLU())
     # loc.add(BatchNormalization(mode=2, axis=1))
 
-    # loc.add(Dense(1024, init='glorot_normal'))
+    # loc.add(Dense(1024, init='he_uniform'))
     # loc.add(LeakyReLU())
     # loc.add(Dropout(0.3))
 
-    loc.add(Dense(25 ** 2, init='glorot_normal'))
+    loc.add(Dense(25 ** 2, init='he_uniform'))
     loc.add(LeakyReLU())
     loc.add(Reshape((25, 25, 1)))
 
-    loc.add(Convolution2D(1, 3, 3, border_mode='same', init='glorot_normal',
+    loc.add(Convolution2D(1, 2, 2, border_mode='same', init='he_uniform',
                           activation='relu'))
     # this is the z space commonly refered to in GAN papers
     latent = Input(shape=(latent_size, ))

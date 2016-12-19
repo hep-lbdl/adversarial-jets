@@ -79,12 +79,11 @@ def two_channel_discriminator(batch_size=100):
     dnn.add(Dropout(0.3))
 
     cnn = Sequential()
-    cnn.add(Convolution2D(32, 7, 7, border_mode='same', subsample=(2, 2),
-                          input_shape=(25, 25, 1)))
+    cnn.add(Convolution2D(32, 3, 3, border_mode='same', input_shape=(25, 25, 1)))
     cnn.add(LeakyReLU())
     cnn.add(Dropout(0.3))
 
-    cnn.add(Convolution2D(64, 5, 5, border_mode='same', subsample=(2, 2)))
+    cnn.add(Convolution2D(64, 3, 3, border_mode='same', subsample=(2, 2)))
     cnn.add(LeakyReLU())
     cnn.add(Dropout(0.3))
     # cnn.add(BatchNormalization(mode=2, axis=-1))
