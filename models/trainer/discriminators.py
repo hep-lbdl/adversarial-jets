@@ -57,23 +57,23 @@ def two_channel_discriminator(batch_size=100):
     image = Input(shape=(25, 25, 1))
 
     x = Flatten()(image)
-    h1 = Dense(700, init='he_uniform')(x)
+    h1 = Dense(1024, init='he_uniform')(x)
     h1 = LeakyReLU()(h1)
     h1 = Dropout(0.3)(h1)
 
-    h2 = Dense(700, init='he_uniform')(h1)
+    h2 = Dense(1024, init='he_uniform')(h1)
     h2 = LeakyReLU()(h2)
     h2 = Dropout(0.3)(h2)
 
-    h3 = Dense(700, init='he_uniform')(h2)
+    h3 = Dense(1024, init='he_uniform')(h2)
     h3 = LeakyReLU()(h3)
     h3 = Dropout(0.3)(h3)
 
-    h4 = Dense(700, init='he_uniform')(h3)
+    h4 = Dense(1024, init='he_uniform')(h3)
     h4 = LeakyReLU()(h4)
     h4 = Dropout(0.3)(h4)
 
-    h5 = Dense(700, init='he_uniform')(h4)
+    h5 = Dense(1024, init='he_uniform')(h4)
     h5 = LeakyReLU()(h5)
     h5 = merge([Dropout(0.3)(h5), h1], mode='sum')
 
@@ -133,6 +133,7 @@ def two_channel_discriminator(batch_size=100):
     image = Input(shape=(25, 25, 1))
 
     dnn_out = dnn(image)
+    cnn_out = cnn(image)
 
     features = merge([dnn_out, cnn(image)], mode='concat', concat_axis=-1)
 
@@ -142,12 +143,15 @@ def two_channel_discriminator(batch_size=100):
     # dim of kernel space
     vspace_dim = 20
 
-    cmp_space = DenseTensor(nb_features, vspace_dim)(dnn_out)
+    dnn_cmp_space = DenseTensor(nb_features, vspace_dim)(dnn_out)
+    cnn_cmp_space = DenseTensor(nb_features, vspace_dim)(cnn_out)
 
     # concat the minibatch features with the normal ones
     features = merge([
         Lambda(minibatch_discriminator,
-               output_shape=minibatch_output_shape)(cmp_space),
+               output_shape=minibatch_output_shape)(dnn_cmp_space),
+        Lambda(minibatch_discriminator,
+               output_shape=minibatch_output_shape)(cnn_cmp_space),
         features
     ], mode='concat')
 

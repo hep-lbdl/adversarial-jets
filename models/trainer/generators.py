@@ -70,15 +70,15 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     skip = LeakyReLU()(x)
 
     # start the second res block
-    x = Convolution2D(128, 5, 5, border_mode='same', init='he_uniform')(skip)
+    x = Convolution2D(64, 1, 1, border_mode='same', init='he_uniform')(skip)
 
-    x = BatchNormalization()(x)
+    # x = BatchNormalization()(x)
     x = LeakyReLU()(x)
-    x = Convolution2D(128, 4, 4, border_mode='same', init='he_uniform')(x)
+    x = Convolution2D(64, 3, 3, border_mode='same', init='he_uniform')(x)
 
-    x = BatchNormalization()(x)
+    # x = BatchNormalization()(x)
     x = LeakyReLU()(x)
-    x = Convolution2D(128, 3, 3, border_mode='same', init='he_uniform')(x)
+    x = Convolution2D(128, 1, 1, border_mode='same', init='he_uniform')(x)
 
     x = merge([skip, x], mode='sum')
     x = LeakyReLU()(x)
@@ -89,15 +89,15 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     skip = LeakyReLU()(x)
 
     # start the second res block
-    x = Convolution2D(64, 3, 3, border_mode='same', init='he_uniform')(skip)
+    x = Convolution2D(32, 1, 1, border_mode='same', init='he_uniform')(skip)
 
-    x = BatchNormalization()(x)
+    # x = BatchNormalization()(x)
     x = LeakyReLU()(x)
-    x = Convolution2D(64, 3, 3, border_mode='same', init='he_uniform')(x)
+    x = Convolution2D(32, 3, 3, border_mode='same', init='he_uniform')(x)
 
-    x = BatchNormalization()(x)
+    # x = BatchNormalization()(x)
     x = LeakyReLU()(x)
-    x = Convolution2D(64, 3, 3, border_mode='same', init='he_uniform')(x)
+    x = Convolution2D(64, 1, 1, border_mode='same', init='he_uniform')(x)
 
     x = merge([skip, x], mode='sum')
     x = LeakyReLU()(x)
@@ -109,25 +109,25 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     z = Input(shape=(latent_size, ))
 
-    x = Dense(25 ** 2, input_dim=latent_size, init='he_uniform')(z)
+    x = Dense(256, input_dim=latent_size, init='he_uniform')(z)
+    x = LeakyReLU()(x)
+
+    x = Dense(25 ** 2, input_dim=latent_size, init='he_uniform')(x)
     skip1 = LeakyReLU()(x)
 
     x = Dense(25 ** 2, init='he_uniform')(skip1)
-    x = merge([skip1, x], mode='sum')
-    skip2 = LeakyReLU()(x)
+    x = LeakyReLU()(x)
 
-    x = Dense(25 ** 2, init='he_uniform')(skip2)
-    x = merge([skip2, x], mode='sum')
-    skip2 = LeakyReLU()(x)
+    x = Dense(25 ** 2, init='he_uniform')(x)
+    x = LeakyReLU()(x)
     # h3 = merge([h3, h2, h1], mode='sum')
 
-    x = Dense(25 ** 2, init='he_uniform')(skip2)
-    x = merge([skip2, x], mode='sum')
-    skip2 = LeakyReLU()(x)
+    x = Dense(25 ** 2, init='he_uniform')(x)
+    x = LeakyReLU()(x)
     # h4 = merge([h4, h3, h2, h1], mode='sum')
 
-    x = Dense(25 ** 2, init='he_uniform')(skip2)
-    x = merge([skip1, skip2, x], mode='sum')
+    x = Dense(25 ** 2, init='he_uniform')(x)
+    x = merge([skip1, x], mode='sum')
 
     loc_out = Reshape((25, 25, 1))(Activation('relu')(x))
 
