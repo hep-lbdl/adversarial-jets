@@ -57,23 +57,23 @@ def two_channel_discriminator(batch_size=100):
     image = Input(shape=(25, 25, 1))
 
     x = Flatten()(image)
-    h1 = Dense(1024, init='he_uniform')(x)
+    h1 = Dense(700, init='he_uniform')(x)
     h1 = LeakyReLU()(h1)
     h1 = Dropout(0.3)(h1)
 
-    h2 = Dense(1024, init='he_uniform')(h1)
+    h2 = Dense(700, init='he_uniform')(h1)
     h2 = LeakyReLU()(h2)
     h2 = Dropout(0.3)(h2)
 
-    h3 = Dense(1024, init='he_uniform')(h2)
+    h3 = Dense(700, init='he_uniform')(h2)
     h3 = LeakyReLU()(h3)
     h3 = Dropout(0.3)(h3)
 
-    h4 = Dense(1024, init='he_uniform')(h3)
+    h4 = Dense(700, init='he_uniform')(h3)
     h4 = LeakyReLU()(h4)
     h4 = Dropout(0.3)(h4)
 
-    h5 = Dense(1024, init='he_uniform')(h4)
+    h5 = Dense(700, init='he_uniform')(h4)
     h5 = LeakyReLU()(h5)
     h5 = merge([Dropout(0.3)(h5), h1], mode='sum')
 
