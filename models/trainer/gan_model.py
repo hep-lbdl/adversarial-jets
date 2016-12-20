@@ -32,8 +32,8 @@ if __name__ == '__main__':
 
     # batch and latent size taken from the paper
     nb_epochs = 50
-    batch_size = 100
-    latent_size = 200
+    batch_size = 150
+    latent_size = 256
 
     nb_classes = 2
 
