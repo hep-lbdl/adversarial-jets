@@ -74,7 +74,7 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     # x = BatchNormalization()(x)
     x = LeakyReLU()(x)
-    x = Convolution2D(64, 3, 3, border_mode='same', init='he_uniform')(x)
+    x = Convolution2D(64, 5, 5, border_mode='same', init='he_uniform')(x)
 
     # x = BatchNormalization()(x)
     x = LeakyReLU()(x)
@@ -93,7 +93,7 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     # x = BatchNormalization()(x)
     x = LeakyReLU()(x)
-    x = Convolution2D(32, 3, 3, border_mode='same', init='he_uniform')(x)
+    x = Convolution2D(32, 5, 5, border_mode='same', init='he_uniform')(x)
 
     # x = BatchNormalization()(x)
     x = LeakyReLU()(x)

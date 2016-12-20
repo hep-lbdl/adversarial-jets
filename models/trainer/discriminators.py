@@ -144,14 +144,11 @@ def two_channel_discriminator(batch_size=100):
     vspace_dim = 20
 
     dnn_cmp_space = DenseTensor(nb_features, vspace_dim)(dnn_out)
-    cnn_cmp_space = DenseTensor(nb_features, vspace_dim)(cnn_out)
 
     # concat the minibatch features with the normal ones
     features = merge([
         Lambda(minibatch_discriminator,
                output_shape=minibatch_output_shape)(dnn_cmp_space),
-        Lambda(minibatch_discriminator,
-               output_shape=minibatch_output_shape)(cnn_cmp_space),
         features
     ], mode='concat')
 
