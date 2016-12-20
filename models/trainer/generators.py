@@ -54,52 +54,84 @@ def basic_generator(latent_size):
 
 def locally_connected_generator(latent_size, return_intermediate=False):
 
-    cnn = Sequential()
+    z = Input(shape=(latent_size, ))
 
-    cnn.add(Dense(1024, input_dim=latent_size))
-    cnn.add(LeakyReLU())
-    # cnn.add(Dropout(0.3))
-    cnn.add(Dense(128 * 7 * 7))
-    cnn.add(LeakyReLU())
-    # cnn.add(Dropout(0.3))
-    cnn.add(Reshape((7, 7, 128)))
+    x = Dense(1024)(z)
+    x = LeakyReLU()(x)
+
+    x = Dense(128 * 7 * 7)(x)
+    x = LeakyReLU()(x)
+
+    x = Reshape((7, 7, 128))(x)
 
     # upsample to (..., 14, 14)
-    cnn.add(UpSampling2D(size=(2, 2)))
-    cnn.add(Convolution2D(128, 5, 5, border_mode='same', init='he_uniform'))
-    cnn.add(LeakyReLU())
+    x = UpSampling2D(size=(2, 2))(x)
+    x = Convolution2D(128, 5, 5, border_mode='same', init='he_uniform')(x)
+    skip = LeakyReLU()(x)
+
+    # start the second res block
+    x = Convolution2D(128, 5, 5, border_mode='same', init='he_uniform')(skip)
+
+    x = BatchNormalization()(x)
+    x = LeakyReLU()(x)
+    x = Convolution2D(128, 4, 4, border_mode='same', init='he_uniform')(x)
+
+    x = BatchNormalization()(x)
+    x = LeakyReLU()(x)
+    x = Convolution2D(128, 3, 3, border_mode='same', init='he_uniform')(x)
+
+    x = merge([skip, x], mode='sum')
+    x = LeakyReLU()(x)
 
     # upsample to (..., 28, 28)
-    cnn.add(UpSampling2D(size=(2, 2)))
-    cnn.add(Convolution2D(64, 3, 3, border_mode='valid', init='he_uniform'))
-    cnn.add(LeakyReLU())
+    x = UpSampling2D(size=(2, 2))(x)
+    x = Convolution2D(64, 3, 3, border_mode='valid', init='he_uniform')(x)
+    skip = LeakyReLU()(x)
 
-    cnn.add(LocallyConnected2D(1, 2, 2, border_mode='valid', bias=False,
-                               init='glorot_normal', activation='relu'))
+    # start the second res block
+    x = Convolution2D(64, 3, 3, border_mode='same', init='he_uniform')(skip)
+
+    x = BatchNormalization()(x)
+    x = LeakyReLU()(x)
+    x = Convolution2D(64, 3, 3, border_mode='same', init='he_uniform')(x)
+
+    x = BatchNormalization()(x)
+    x = LeakyReLU()(x)
+    x = Convolution2D(64, 3, 3, border_mode='same', init='he_uniform')(x)
+
+    x = merge([skip, x], mode='sum')
+    x = LeakyReLU()(x)
+
+    cnn_out = LocallyConnected2D(1, 2, 2, border_mode='valid', bias=False,
+                                 init='glorot_normal', activation='relu')(x)
+
+    cnn = Model(input=z, output=cnn_out)
 
     z = Input(shape=(latent_size, ))
 
-    h1 = Dense(25 ** 2, input_dim=latent_size, init='he_uniform')(z)
-    h1 = LeakyReLU()(h1)
+    x = Dense(25 ** 2, input_dim=latent_size, init='he_uniform')(z)
+    skip1 = LeakyReLU()(x)
 
-    h2 = Dense(25 ** 2, init='he_uniform')(h1)
-    h2 = LeakyReLU()(h2)
-    # h2 = merge([h2, h1], mode='sum')
+    x = Dense(25 ** 2, init='he_uniform')(skip1)
+    x = merge([skip1, x], mode='sum')
+    skip2 = LeakyReLU()(x)
 
-    h3 = Dense(25 ** 2, init='he_uniform')(h2)
-    h3 = LeakyReLU()(h3)
+    x = Dense(25 ** 2, init='he_uniform')(skip2)
+    x = merge([skip2, x], mode='sum')
+    skip2 = LeakyReLU()(x)
     # h3 = merge([h3, h2, h1], mode='sum')
 
-    h4 = Dense(25 ** 2, init='he_uniform')(h3)
-    h4 = LeakyReLU()(h4)
+    x = Dense(25 ** 2, init='he_uniform')(skip2)
+    x = merge([skip2, x], mode='sum')
+    skip2 = LeakyReLU()(x)
     # h4 = merge([h4, h3, h2, h1], mode='sum')
 
-    h5 = Dense(25 ** 2, init='he_uniform')(h4)
-    h5 = LeakyReLU()(h5)
-    h5 = merge([h5, h1], mode='sum')
-    im_out = Reshape((25, 25, 1))(Activation('relu')(h5))
+    x = Dense(25 ** 2, init='he_uniform')(skip2)
+    x = merge([skip1, skip2, x], mode='sum')
 
-    loc = Model(input=z, output=im_out)
+    loc_out = Reshape((25, 25, 1))(Activation('relu')(x))
+
+    loc = Model(input=z, output=loc_out)
 
     # loc = Sequential()
 
