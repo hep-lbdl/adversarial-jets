@@ -65,8 +65,8 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     x = Reshape((7, 7, 128))(x)
 
     # upsample to (..., 14, 14)
-    x = UpSampling2D(size=(2, 2))(x)
-    x = Convolution2D(128, 5, 5, border_mode='same', init='he_uniform')(x)
+    skip0 = UpSampling2D(size=(2, 2))(x)
+    x = Convolution2D(128, 5, 5, border_mode='same', init='he_uniform')(skip0)
     skip = LeakyReLU()(x)
 
     x = Convolution2D(32, 3, 3, border_mode='same', init='he_uniform')(x)
@@ -74,7 +74,7 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     x = Convolution2D(128, 1, 1, border_mode='same', init='he_uniform')(x)
 
-    x = merge([skip, x], mode='sum')
+    x = merge([skip, x, skip0], mode='sum')
     x = LeakyReLU()(x)
 
     # upsample to (..., 28, 28)
