@@ -69,8 +69,8 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     x = Convolution2D(128, 5, 5, border_mode='same', init='he_uniform')(x)
     skip = LeakyReLU()(x)
 
-    # x = Convolution2D(32, 3, 3, border_mode='same', init='he_uniform')(x)
-    # x = LeakyReLU()(x)
+    x = Convolution2D(32, 3, 3, border_mode='same', init='he_uniform')(x)
+    x = LeakyReLU()(x)
 
     x = Convolution2D(128, 1, 1, border_mode='same', init='he_uniform')(x)
 
@@ -79,13 +79,13 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     # upsample to (..., 28, 28)
     x = UpSampling2D(size=(2, 2))(x)
-    x = Convolution2D(128, 3, 3, border_mode='valid', init='he_uniform')(x)
+    x = Convolution2D(64, 3, 3, border_mode='valid', init='he_uniform')(x)
     skip = LeakyReLU()(x)
 
-    # x = Convolution2D(32, 3, 3, border_mode='same', init='he_uniform')(x)
-    # x = LeakyReLU()(x)
+    x = Convolution2D(32, 3, 3, border_mode='same', init='he_uniform')(x)
+    x = LeakyReLU()(x)
 
-    x = Convolution2D(128, 1, 1, border_mode='same', init='he_uniform')(x)
+    x = Convolution2D(64, 1, 1, border_mode='same', init='he_uniform')(x)
 
     x = merge([skip, x], mode='sum')
     x = LeakyReLU()(x)

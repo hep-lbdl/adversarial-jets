@@ -142,7 +142,7 @@ def two_channel_discriminator(batch_size=100):
     features = merge([dnn_out, cnn(image)], mode='concat', concat_axis=-1)
 
     # nb of features to obtain
-    nb_features = 10
+    nb_features = 20
 
     # dim of kernel space
     vspace_dim = 20
