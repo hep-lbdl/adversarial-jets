@@ -56,10 +56,10 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     z = Input(shape=(latent_size, ))
 
-    x = Dense(1024)(z)
+    x = Dense(1024, init='he_uniform')(z)
     x = LeakyReLU()(x)
 
-    x = Dense(128 * 7 * 7)(x)
+    x = Dense(128 * 7 * 7, init='he_uniform')(x)
     x = LeakyReLU()(x)
 
     x = Reshape((7, 7, 128))(x)
@@ -69,15 +69,9 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     x = Convolution2D(128, 5, 5, border_mode='same', init='he_uniform')(x)
     skip = LeakyReLU()(x)
 
-    # start the second res block
-    x = Convolution2D(64, 1, 1, border_mode='same', init='he_uniform')(skip)
-
-    # x = BatchNormalization()(x)
+    x = Convolution2D(32, 3, 3, border_mode='same', init='he_uniform')(x)
     x = LeakyReLU()(x)
-    x = Convolution2D(64, 5, 5, border_mode='same', init='he_uniform')(x)
 
-    # x = BatchNormalization()(x)
-    x = LeakyReLU()(x)
     x = Convolution2D(128, 1, 1, border_mode='same', init='he_uniform')(x)
 
     x = merge([skip, x], mode='sum')
@@ -85,19 +79,13 @@ def locally_connected_generator(latent_size, return_intermediate=False):
 
     # upsample to (..., 28, 28)
     x = UpSampling2D(size=(2, 2))(x)
-    x = Convolution2D(64, 3, 3, border_mode='valid', init='he_uniform')(x)
+    x = Convolution2D(128, 3, 3, border_mode='valid', init='he_uniform')(x)
     skip = LeakyReLU()(x)
 
-    # start the second res block
-    x = Convolution2D(32, 1, 1, border_mode='same', init='he_uniform')(skip)
-
-    # x = BatchNormalization()(x)
+    x = Convolution2D(32, 3, 3, border_mode='same', init='he_uniform')(x)
     x = LeakyReLU()(x)
-    x = Convolution2D(32, 5, 5, border_mode='same', init='he_uniform')(x)
 
-    # x = BatchNormalization()(x)
-    x = LeakyReLU()(x)
-    x = Convolution2D(64, 1, 1, border_mode='same', init='he_uniform')(x)
+    x = Convolution2D(128, 1, 1, border_mode='same', init='he_uniform')(x)
 
     x = merge([skip, x], mode='sum')
     x = LeakyReLU()(x)
@@ -158,7 +146,7 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     # this will be our label
     image_class = Input(shape=(1, ), dtype='int32')
     cls = Flatten()(Embedding(2, latent_size, input_length=1,
-                              init='glorot_normal')(image_class))
+                              init='he_uniform')(image_class))
 
     # hadamard product between z-space and a class conditional embedding
     # h = merge([latent, cls], mode='concat', concat_axis=-1)
