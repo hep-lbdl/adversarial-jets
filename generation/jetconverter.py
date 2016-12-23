@@ -163,9 +163,17 @@ if __name__ == '__main__':
                 tag = is_signal(fname, signal_match)
                 for jet_nb, jet in enumerate(df):
                     if jet_nb % 1000 == 0:
-                        logger.info('processing jet {} of {} for file {}'.format(
-                            jet_nb, n_entries, fname))
-                    if (np.abs(jet['LeadingEta']) < 2) & (jet['LeadingPt'] > float(args.ptmin)) & (jet['LeadingPt'] < float(args.ptmax)) & (jet['LeadingM'] < float(200)) & (jet['LeadingM'] > float(0)):
+                        logger.info('processing jet {} of {} for file '
+                                    '{}'.format(jet_nb, n_entries, fname))
+
+                    include = (
+                        (np.abs(jet['LeadingEta']) < 2) &
+                        (jet['LeadingPt'] > float(args.ptmin)) &
+                        (jet['LeadingPt'] < float(args.ptmax)) &
+                        (jet['LeadingM'] < float(200)) &
+                        (jet['LeadingM'] > float(0))
+                    )
+                    ifinclide:
 
                         buf = buffer_to_jet(jet, tag, max_entry=100000,
                                             pix=pix_per_side)

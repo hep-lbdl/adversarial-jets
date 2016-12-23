@@ -10,8 +10,6 @@ import numpy as np
 from .jettools import rotate_jet, flip_jet, plot_mean_jet
 
 
-
- 
 def angle_from_vec(v1, v2):
     # cosang = np.dot(v1, v2)
     cosang = v1
@@ -19,7 +17,7 @@ def angle_from_vec(v1, v2):
     return np.arctan2(sinang, cosang)
 
 
-def buffer_to_jet(entry, tag = 0, side = 'r', max_entry = None, pix = 25):
+def buffer_to_jet(entry, tag=0, side='r', max_entry=None, pix=25):
     """
     Takes an *single* entry from an structured ndarray, i.e., X[i], 
     and a tag = {0, 1} indicating if its a signal entry or not. 
@@ -41,26 +39,41 @@ def buffer_to_jet(entry, tag = 0, side = 'r', max_entry = None, pix = 25):
         * Tau{n} for n = 1, 2, 3 
     """
 
-
     if (entry['SubLeadingEta'] < -10) | (entry['SubLeadingPhi'] < -10):
         e, p = (entry['PCEta'], entry['PCPhi'])
     else:
         e, p = (entry['SubLeadingEta'], entry['SubLeadingPhi'])
-    
+
     angle = np.arctan(p / e) + 2.0 * np.arctan(1.0)
 
     if (-np.sin(angle) * e + np.cos(angle) * p) > 0:
         angle += -4.0 * np.arctan(1.0)
 
-    image = flip_jet(rotate_jet(np.array(entry['Intensity']), -angle, normalizer=4000.0, dim=pix), side)
-    e_norm = np.linalg.norm(image)
-    return ((image / e_norm).astype('float32'), np.float32(tag), 
-        np.float32(entry['LeadingPt']), np.float32(entry['LeadingEta']), 
-        np.float32(entry['LeadingPhi']), np.float32(entry['LeadingM']), np.float32(entry['DeltaR']),
-        np.float32(entry['Tau32']), np.float32(entry['Tau21']), np.float32(entry['Tau1']), np.float32(entry['Tau2']), np.float32(entry['Tau3']))
+    # image = flip_jet(rotate_jet(np.array(entry['Intensity']), -angle, normalizer=4000.0, dim=pix), side)
+    image = flip_jet(
+        rotate_jet(np.array(entry['Intensity']), -angle,
+                   normalizer=None, dim=pix),
+        side
+    )
+    # e_norm = np.linalg.norm(image)
+    e_norm = 1.0
+    return (
+        (image / e_norm).astype('float32'),
+        np.float32(tag),
+        np.float32(entry['LeadingPt']),
+        np.float32(entry['LeadingEta']),
+        np.float32(entry['LeadingPhi']),
+        np.float32(entry['LeadingM']),
+        np.float32(entry['DeltaR']),
+        np.float32(entry['Tau32']),
+        np.float32(entry['Tau21']),
+        np.float32(entry['Tau1']),
+        np.float32(entry['Tau2']),
+        np.float32(entry['Tau3'])
+    )
 
 
-def is_signal(f, matcher = 'wprime'):
+def is_signal(f, matcher='wprime'):
     """
     Takes as input a filename and a string to match. If the 
     'matcher' string is found in the filename, the file is 
