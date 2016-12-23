@@ -50,13 +50,15 @@ def buffer_to_jet(entry, tag=0, side='r', max_entry=None, pix=25):
         angle += -4.0 * np.arctan(1.0)
 
     # image = flip_jet(rotate_jet(np.array(entry['Intensity']), -angle, normalizer=4000.0, dim=pix), side)
+
+    normalizer = 4000.0
     image = flip_jet(
         rotate_jet(np.array(entry['Intensity']), -angle,
-                   normalizer=None, dim=pix),
+                   normalizer=normalizer, dim=pix),
         side
     )
     # e_norm = np.linalg.norm(image)
-    e_norm = 1.0
+    e_norm = 1.0 / normalizer
     return (
         (image / e_norm).astype('float32'),
         np.float32(tag),

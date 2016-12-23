@@ -173,7 +173,7 @@ if __name__ == '__main__':
                         (jet['LeadingM'] < float(200)) &
                         (jet['LeadingM'] > float(0))
                     )
-                    ifinclide:
+                    if include:
 
                         buf = buffer_to_jet(jet, tag, max_entry=100000,
                                             pix=pix_per_side)
