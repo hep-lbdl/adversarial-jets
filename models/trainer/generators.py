@@ -90,13 +90,8 @@ def locally_connected_generator(latent_size, return_intermediate=False):
     x = merge([skip, x], mode='sum')
     x = LeakyReLU()(x)
 
-    lcn_out = LocallyConnected2D(1, 2, 2, border_mode='valid', bias=False,
-                                 init='he_uniform', activation='relu')(x)
-
-    cnv_out = Convolution2D(1, 2, 2, border_mode='valid',
-                            bias=True, init='he_uniform', activation='relu')(x)
-
-    cnn_out = merge([cnv_out, lcn_out], mode='max')
+    cnn_out = LocallyConnected2D(1, 2, 2, border_mode='valid', bias=False,
+                                 init='glorot_normal', activation='relu')(x)
 
     cnn = Model(input=z, output=cnn_out)
 

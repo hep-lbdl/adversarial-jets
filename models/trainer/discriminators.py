@@ -142,10 +142,10 @@ def two_channel_discriminator(batch_size=100):
     features = merge([dnn_out, cnn(image)], mode='concat', concat_axis=-1)
 
     # nb of features to obtain
-    nb_features = 60
+    nb_features = 20
 
     # dim of kernel space
-    vspace_dim = 6
+    vspace_dim = 20
 
     dnn_cmp_space = DenseTensor(nb_features, vspace_dim)(dnn_out)
 
