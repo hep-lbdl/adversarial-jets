@@ -15,7 +15,7 @@ def image_mass_func(eta_grid=None, phi_grid=None, shape=(None, 1, 25, 25), use_k
 
     >>> jet_mass = image_mass_func()
     >>> minibatch = np.random.uniform(0, 1, (100, 1, 25, 25))
-    >>> mass = jet_mass(minibatch
+    >>> mass = jet_mass(minibatch)
     """
 
     if not use_keras:
