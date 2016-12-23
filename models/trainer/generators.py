@@ -1,12 +1,14 @@
 import keras.backend as K
 from keras.datasets import mnist
-from keras.layers import Input, Dense, Reshape, Flatten, Embedding, merge, Dropout, ZeroPadding2D, LocallyConnected2D
+from keras.layers import Input, Dense, Reshape, Flatten, Embedding, merge, Dropout, ZeroPadding2D, LocallyConnected2D, BatchNormalization, Activation
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.convolutional import UpSampling2D, Convolution2D
 from keras.models import Sequential, Model
 from keras.optimizers import Adam
 from keras.utils.generic_utils import Progbar
 import numpy as np
+
+K.set_image_dim_ordering('tf')
 
 
 def basic_generator(latent_size):
@@ -52,72 +54,115 @@ def basic_generator(latent_size):
 
 def locally_connected_generator(latent_size, return_intermediate=False):
 
-    cnn = Sequential()
+    z = Input(shape=(latent_size, ))
 
-    cnn.add(Dense(1024, input_dim=2 * latent_size))
-    cnn.add(LeakyReLU())
-    # cnn.add(Dropout(0.3))
-    cnn.add(Dense(128 * 7 * 7))
-    cnn.add(LeakyReLU())
-    # cnn.add(Dropout(0.3))
-    cnn.add(Reshape((128, 7, 7)))
+    x = Dense(1024, init='he_uniform')(z)
+    x = LeakyReLU()(x)
 
-    # upsample to (..., 64, 14, 14)
-    cnn.add(UpSampling2D(size=(2, 2)))
-    # cnn.add(ZeroPadding2D(padding=(2, 2, 2, 2)))
-    cnn.add(LocallyConnected2D(4, 5, 5, border_mode='valid', init='glorot_normal'))
-    cnn.add(LeakyReLU())
-    cnn.add(BatchNormalization(mode=2, axis=1))
-    # cnn.add(Dropout(0.3))
+    x = Dense(128 * 7 * 7, init='he_uniform')(x)
+    x = LeakyReLU()(x)
 
-    # upsample to (..., 64, 28, 28)
-    cnn.add(UpSampling2D(size=(2, 2)))
+    x = Reshape((7, 7, 128))(x)
 
-    # valid conv to (..., 32, 25, 25)
-    cnn.add(LocallyConnected2D(4, 4, 4, border_mode='valid', init='glorot_normal'))
-    cnn.add(LeakyReLU())
-    # cnn.add(Dropout(0.3))
+    # upsample to (..., 14, 14)
+    x = UpSampling2D(size=(2, 2))(x)
+    x = Convolution2D(128, 5, 5, border_mode='same', init='he_uniform')(x)
+    skip = LeakyReLU()(x)
 
-    # take a channel axis reduction to (..., 1, 25, 25)
-    cnn.add(Convolution2D(1, 2, 2, border_mode='same', bias=False,
-                          init='glorot_normal', activation='relu'))
+    # x = Convolution2D(32, 3, 3, border_mode='same', init='he_uniform')(x)
+    # x = LeakyReLU()(x)
 
-    loc = Sequential()
+    x = Convolution2D(128, 1, 1, border_mode='same', init='he_uniform')(x)
 
-    loc.add(Dense(512, input_dim=2 * latent_size, init='glorot_normal'))
-    loc.add(LeakyReLU())
+    x = merge([skip, x], mode='sum')
+    x = LeakyReLU()(x)
 
-    loc.add(Dense(1024, init='glorot_normal'))
-    loc.add(LeakyReLU())
-    loc.add(BatchNormalization(mode=2, axis=1))
+    # upsample to (..., 28, 28)
+    x = UpSampling2D(size=(2, 2))(x)
+    x = Convolution2D(64, 3, 3, border_mode='valid', init='he_uniform')(x)
+    skip = LeakyReLU()(x)
 
-    loc.add(Dense(1024, init='glorot_normal'))
-    loc.add(LeakyReLU())
-    # loc.add(Dropout(0.3))
+    # x = Convolution2D(32, 3, 3, border_mode='same', init='he_uniform')(x)
+    # x = LeakyReLU()(x)
 
-    loc.add(Dense(25 ** 2, activation='relu', init='glorot_normal'))
-    loc.add(Reshape((1, 25, 25)))
+    x = Convolution2D(64, 1, 1, border_mode='same', init='he_uniform')(x)
 
+    x = merge([skip, x], mode='sum')
+    x = LeakyReLU()(x)
+
+    cnn_out = LocallyConnected2D(1, 2, 2, border_mode='valid', bias=False,
+                                 init='glorot_normal', activation='relu')(x)
+
+    cnn = Model(input=z, output=cnn_out)
+
+    z = Input(shape=(latent_size, ))
+
+    x = Dense(256, input_dim=latent_size, init='he_uniform')(z)
+    x = LeakyReLU()(x)
+
+    x = Dense(25 ** 2, input_dim=latent_size, init='he_uniform')(x)
+    skip1 = LeakyReLU()(x)
+
+    x = Dense(25 ** 2, init='he_uniform')(skip1)
+    x = LeakyReLU()(x)
+
+    x = Dense(25 ** 2, init='he_uniform')(x)
+    x = LeakyReLU()(x)
+    # h3 = merge([h3, h2, h1], mode='sum')
+
+    x = Dense(25 ** 2, init='he_uniform')(x)
+    x = LeakyReLU()(x)
+    # h4 = merge([h4, h3, h2, h1], mode='sum')
+
+    x = Dense(25 ** 2, init='he_uniform')(x)
+    x = merge([skip1, x], mode='sum')
+
+    loc_out = Reshape((25, 25, 1))(Activation('relu')(x))
+
+    loc = Model(input=z, output=loc_out)
+
+    # loc = Sequential()
+
+    # loc.add(Dense(512, input_dim=latent_size, init='he_uniform'))
+    # loc.add(LeakyReLU())
+
+    # loc.add(Dense(1024, init='he_uniform'))
+    # loc.add(LeakyReLU())
+    # # loc.add(BatchNormalization(mode=2, axis=1))
+
+    # # loc.add(Dense(1024, init='he_uniform'))
+    # # loc.add(LeakyReLU())
+    # # loc.add(Dropout(0.3))
+
+    # loc.add(Dense(25 ** 2, init='he_uniform'))
+    # loc.add(LeakyReLU())
+    # loc.add(Reshape((25, 25, 1)))
+
+    # loc.add(Convolution2D(1, 2, 2, border_mode='same', init='he_uniform',
+    #                       activation='relu'))
     # this is the z space commonly refered to in GAN papers
     latent = Input(shape=(latent_size, ))
 
     # this will be our label
     image_class = Input(shape=(1, ), dtype='int32')
     cls = Flatten()(Embedding(2, latent_size, input_length=1,
-                              init='glorot_normal')(image_class))
+                              init='he_uniform')(image_class))
 
     # hadamard product between z-space and a class conditional embedding
-    h = merge([latent, cls], mode='concat', concat_axis=-1)
+    # h = merge([latent, cls], mode='concat', concat_axis=-1)
+    h = merge([latent, cls], mode='mul')
 
     cnn_img, loc_img = cnn(h), loc(h)
 
-    # initialize this to flat prior between streams
-    pointwise_reduce = LocallyConnected2D(1, 1, 1, bias=False,
-                                          weights=[np.ones((625, 2, 1)) / 2])
+    # # initialize this to flat prior between streams
+    # pointwise_reduce = LocallyConnected2D(1, 1, 1, bias=False,
+    #                                       weights=[np.ones((625, 2, 1)) / 2])
 
-    # concat over the channel axis
-    fake_image = pointwise_reduce(
-        merge([cnn_img, loc_img], mode='concat', concat_axis=1))
+    # # concat over the channel axis
+    # fake_image = pointwise_reduce(
+    #     merge([cnn_img, loc_img], mode='concat', concat_axis=-1))
+
+    fake_image = merge([cnn_img, loc_img], mode='ave')
 
     # fake_image = merge([cnn_img, loc_img], mode='ave')
 
