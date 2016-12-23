@@ -124,7 +124,7 @@ if __name__ == '__main__':
     parser.add_argument('--process', type=str, default='WprimeToWZ_lept',
                         help='Can be one of ZprimeTottbar, WprimeToWZ_lept, WprimeToWZ_had, or QCD')
     parser.add_argument('--pixels', type=int, default=25)
-    parser.add_argument('--range', type=float, default=1)
+    parser.add_argument('--range', type=float, default=1.25)
     parser.add_argument('--pileup', type=int, default=0)
     parser.add_argument('--pt_hat_min', type=float, default=100)
     parser.add_argument('--pt_hat_max', type=float, default=500)

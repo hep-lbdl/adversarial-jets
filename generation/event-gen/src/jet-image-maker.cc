@@ -51,7 +51,7 @@ int main(int argc, const char *argv[]) {
     float pThatmin = 100;
     float pThatmax = 500;
     float boson_mass = 1500;
-    float image_range = 1.0;
+    float image_range = 1.25;
     int proc = 1;
     int seed = -1;
 
@@ -67,7 +67,7 @@ int main(int argc, const char *argv[]) {
         .help("Number of pixels per dimension");
     parser.add_option("--Range")
         .mode(optionparser::store_value)
-        .default_value(1)
+        .default_value(1.25)
         .help("Image captures [-w, w] x [-w, w], where w is the value passed.");
     parser.add_option("--Debug")
         .mode(optionparser::store_value)

@@ -139,22 +139,31 @@ def two_channel_discriminator(batch_size=100):
     dnn_out = dnn(image)
     cnn_out = cnn(image)
 
-    features = merge([dnn_out, cnn(image)], mode='concat', concat_axis=-1)
+    net_features = merge([dnn_out, cnn(image)], mode='concat', concat_axis=-1)
 
     # nb of features to obtain
-    nb_features = 20
+    nb_features = 10
 
     # dim of kernel space
     vspace_dim = 20
 
-    dnn_cmp_space = DenseTensor(nb_features, vspace_dim)(dnn_out)
+    # dnn_cmp_space = DenseTensor(nb_features, vspace_dim)(dnn_out)
+
+    # # concat the minibatch features with the normal ones
+    # features = merge([
+    #     Lambda(minibatch_discriminator,
+    #            output_shape=minibatch_output_shape)(dnn_cmp_space),
+    #     features
+    # ], mode='concat')
+
+    features_mbd = DenseTensor(nb_features, vspace_dim)(net_features)
 
     # concat the minibatch features with the normal ones
-    features = merge([
-        Lambda(minibatch_discriminator,
-               output_shape=minibatch_output_shape)(dnn_cmp_space),
-        features
-    ], mode='concat')
+    features_mbd = Lambda(minibatch_discriminator,
+                          output_shape=minibatch_output_shape)(features_mbd)
+
+    features = merge([features_mbd, net_features], mode='concat',
+                     concat_axis=-1)
 
     # fake output tracks binary fake / not-fake, and the auxiliary requires
     # reconstruction of latent features, in this case, labels
