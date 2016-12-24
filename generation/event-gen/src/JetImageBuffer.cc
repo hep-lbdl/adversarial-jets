@@ -295,8 +295,11 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
         new TH2F("", "", pixels, -range, range, pixels, -range, range);
 
     for (unsigned int i = 0; i < sorted_consts.size(); i++) {
-        orig_im->Fill(consts_image[i].first, consts_image[i].second,
-                      sorted_consts[i].e());
+        TLorentzVector hold = TLorentzVector();
+        
+        hold.SetPtEtaPhiM(sorted_consts[i].perp(), consts_image[i].first, consts_image[i].second, 0.0);
+        
+        orig_im->Fill(consts_image[i].first, consts_image[i].second, hold.E());
         // std::cout << i << "       " << consts_image[i].first  << " " <<
         // consts_image[i].second << std::endl;
     }
@@ -307,7 +310,8 @@ void JetImageBuffer::AnalyzeEvent(int ievt, Pythia8::Pythia *pythia8,
     for (int i = 1; i <= orig_im->GetNbinsX(); i++) {
         for (int j = 1; j <= orig_im->GetNbinsY(); j++) {
             // m_RotatedIntensity[counter] = rotatedimage->GetBinContent(i,j);
-            m_Intensity[counter] = orig_im->GetBinContent(i, j);
+            double eta_disc = orig_im->GetXaxis()->GetBinCenter(i);
+            m_Intensity[counter] = orig_im->GetBinContent(i, j) / cosh(eta_disc);
             // m_LocalDensity[counter] = localdensity->GetBinContent(i, j);
             // m_GlobalDensity[counter] = globaldensity->GetBinContent(i, j);
 
