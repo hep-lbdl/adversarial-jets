@@ -13,8 +13,16 @@ from scipy import ndimage
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 
+def sum_image(image):
+    out = 0.
+    for i in range(len(image)):
+        for j in range(len(image)):
+            out+=image[i][j]
+            pass
+        pass
+    return out
 
-def rotate_jet(jet, angle, in_radians=True, normalizer=None, dim=25):
+def rotate_jet(jet, angle, in_radians=True, normalizer=None, dim=25, renorm = True, interp=3):
     """
     Take an *flat* unrotated in the form of an array from Mediator.exe, and an angle, 
     and rotates the jet to that angle using a passively rotated cubic spline 
@@ -33,7 +41,13 @@ def rotate_jet(jet, angle, in_radians=True, normalizer=None, dim=25):
     # return ndimage.interpolation.rotate(im, angle, reshape=False, order=3)
     # i = PIL.Image.fromarray(im).rotate(angle, resample=PIL.Image.BICUBIC)
     # return np.array(i)
-    return sk.rotate(im, angle, order=3)
+    im_out = sk.rotate(im, angle, order=interp)
+    #print sum_image(im),sum_image(im_out),sum_image(im_out / (sum_image(im_out)/sum_image(im))), sum_image(im)/sum_image(im_out)
+    if (renorm):
+        return im_out / (sum_image(im_out)/sum_image(im))
+    else:
+        return im_out;
+    #return sk.rotate(im, angle, order=3)
 
 
 def flip_jet(jet, pool='r'):
