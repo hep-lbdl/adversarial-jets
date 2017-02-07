@@ -1,5 +1,9 @@
 # Location-Aware Generative Adversarial Networks (LAGAN) for Physics Synthesis
 
+[![DOI](https://zenodo.org/badge/DOI/10.17632/4r4v785rgx.1.svg)](https://doi.org/10.17632/4r4v785rgx.1)
+
+This repository contains all the code used in L. de Oliveira ([@lukedeo](https://github.com/lukedeo)), M. Paganini ([@mickypaganini](https://github.com/mickypaganini)), B. Nachman ([@bnachman](https://github.com/bnachman)), _Learning Particle Physics by Example: Location-Aware Generative Adversarial Networks for Physics Synthesis_ [[arXiv:1701.05927]](https://arxiv.org/abs/1701.05927)
+
 This repository is structured as such:
 * [generation](#generation) 
 * [models](#models)
