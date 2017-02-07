@@ -1,2 +1,0 @@
-export PYTHONPATH=/nfs/slac/g/atlas/u01/users/makagan/python_packages/lib/python//site-packages/:/nfs/slac/g/atlas/u01/users/makagan/python_packages/lib/python2.7/site-packages/:$PYTHONPATH
-source /nfs/slac/g/atlas/u01/users/makagan/root_5.34.34/builddir/bin/thisroot.sh

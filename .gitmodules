@@ -1,3 +1,0 @@
-[submodule "generation/event-gen/cmd-parser"]
-	path = generation/event-gen/cmd-parser
-	url = http://github.com/lukedeo/cmd-parser
