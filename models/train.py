@@ -153,15 +153,15 @@ if __name__ == '__main__':
               '(Or, falling back to cache if present)')
 
         # Info for downloading the dataset from Zenodo
-        MD5_HASH = '4cbeb02f9ff6195dacc4f8e4e0053486'
-        DATAFILE = 'jet-images_slim_preprocessed_Mass60-100_pT250-300_R1.25_Pix25.hdf5'
+        MD5_HASH = 'f9b11c46b6a0ff928bec2eccf865ecf0'
+        DATAFILE = 'jet-images_Mass60-100_pT250-300_R1.25_Pix25.hdf5'
         URL_TEMPLATE = 'https://zenodo.org/record/{record}/files/{filename}'
 
         print('MD5 verification: {}'.format(MD5_HASH))
 
         datafile = get_file(
             fname='lagan-jet-images.hdf5',
-            origin=URL_TEMPLATE.format(record=268592, filename=DATAFILE),
+            origin=URL_TEMPLATE.format(record=269622, filename=DATAFILE),
             md5_hash=MD5_HASH
         )
 
