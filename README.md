@@ -3,9 +3,9 @@
 | Asset  | Location |
 | ------------- | ------------- |
 | Data (Pythia images) | [![DOI](https://zenodo.org/badge/DOI/10.17632/4r4v785rgx.1.svg)](https://doi.org/10.17632/4r4v785rgx.1) |
-| Model Weights  |  |
+| Model Weights  | [TODO] |
 | Docker image (generation) | [![](https://images.microbadger.com/badges/version/lukedeo/ji.svg)](https://hub.docker.com/r/lukedeo/ji/) |
-| Docker image (training) |  |
+| Docker image (training) | [TODO] |
 
 This repository contains all the code used in L. de Oliveira ([@lukedeo](https://github.com/lukedeo)), M. Paganini ([@mickypaganini](https://github.com/mickypaganini)), B. Nachman ([@bnachman](https://github.com/bnachman)), _Learning Particle Physics by Example: Location-Aware Generative Adversarial Networks for Physics Synthesis_ [[`arXiv:1701.05927`](https://arxiv.org/abs/1701.05927)]
 
