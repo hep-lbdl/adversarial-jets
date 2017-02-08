@@ -190,7 +190,7 @@ if __name__ == '__main__':
         X, y = d['image'], d['signal']
 
     # remove unphysical values
-    X[X < 2.7e-9] = 0
+    X[X < 1e-3] = 0
 
     # we don't really need validation data as it's a bit meaningless for GANs,
     # but since we have an auxiliary task, it can be helpful to debug mode
