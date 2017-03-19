@@ -2,6 +2,7 @@
 
 | Asset  | Location |
 | ------------- | ------------- |
+| Source Code (this repository) | [![DOI](https://zenodo.org/badge/74294060.svg)](https://zenodo.org/badge/latestdoi/74294060) |
 | Data (Pythia images) | [![DOI](https://zenodo.org/badge/DOI/10.17632/4r4v785rgx.1.svg)](https://doi.org/10.17632/4r4v785rgx.1) |
 | Model Weights  | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.400706.svg)](https://doi.org/10.5281/zenodo.400706) |
 | Docker image (generation) | [![](https://images.microbadger.com/badges/version/lukedeo/ji.svg)](https://hub.docker.com/r/lukedeo/ji/) |
