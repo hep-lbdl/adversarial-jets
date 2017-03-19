@@ -37,7 +37,9 @@ def get_parser():
         'Sensible defaults come from [arXiv/1511.06434]',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-
+    parser.add_argument('--model', '-m', action='store', type=str,
+                        default='lagan', help='Model architecture to use.',
+                        choices=['lagan', 'fcn', 'hybrid', 'dcgan'])
     parser.add_argument('--nb-epochs', action='store', type=int, default=50,
                         help='Number of epochs to train for.')
     parser.add_argument('--batch-size', action='store', type=int, default=100,
@@ -90,8 +92,10 @@ if __name__ == '__main__':
     from keras.utils.generic_utils import Progbar
     from sklearn.cross_validation import train_test_split
 
-    from lagan.generator import generator as build_generator
-    from lagan.discriminator import discriminator as build_discriminator
+    exec('from networks.{} import generator as build_generator, '
+         'discriminator as build_discriminator'.format(results.model))
+
+    print('[INFO] Building the {} model.'.format(results.model))
 
     # batch, latent size, and whether or not to be verbose with a progress bar
     nb_epochs = results.nb_epochs
@@ -105,7 +109,7 @@ if __name__ == '__main__':
     adam_beta_1 = results.adam_beta
 
     # build the discriminator
-    print('Building discriminator')
+    print('[INFO] Building discriminator')
     discriminator = build_discriminator()
     discriminator.compile(
         optimizer=Adam(lr=adam_lr, beta_1=adam_beta_1),
@@ -113,7 +117,7 @@ if __name__ == '__main__':
     )
 
     # build the generator
-    print('Building generator')
+    print('[INFO] Building generator')
     generator = build_generator(latent_size)
     generator.compile(
         optimizer=Adam(lr=adam_lr, beta_1=adam_beta_1),
@@ -144,20 +148,20 @@ if __name__ == '__main__':
 
     # if we don't have the dataset, go fetch it from Zenodo, or re-find in the
     # Keras cache
-    print('Loading data')
+    print('[INFO] Loading data')
     if (datafile is None) or (not os.path.isfile(datafile)):
 
         from keras.utils.data_utils import get_file
 
-        print('File not found or not specified. Downloading from Zenodo. '
-              '(Or, falling back to cache if present)')
+        print('[WARN] File not found or not specified. Downloading from '
+              'Zenodo. (Or, falling back to cache if present)')
 
         # Info for downloading the dataset from Zenodo
         MD5_HASH = 'f9b11c46b6a0ff928bec2eccf865ecf0'
         DATAFILE = 'jet-images_Mass60-100_pT250-300_R1.25_Pix25.hdf5'
         URL_TEMPLATE = 'https://zenodo.org/record/{record}/files/{filename}'
 
-        print('MD5 verification: {}'.format(MD5_HASH))
+        print('[INFO] MD5 verification: {}'.format(MD5_HASH))
 
         datafile = get_file(
             fname='lagan-jet-images.hdf5',
@@ -179,7 +183,7 @@ if __name__ == '__main__':
         X, y = X[ix], y[ix]
 
     except IOError:
-        print('Failure to read as HDF5, falling back to numpy')
+        print('[WARN] Failure to read as HDF5, falling back to numpy')
 
         d = np.load(datafile, mmap_mode='r')
         ix = list(range(d.shape[0]))
@@ -345,6 +349,3 @@ if __name__ == '__main__':
                                overwrite=True)
         discriminator.save_weights('{0}{1:03d}.hdf5'.format(results.d_pfx, epoch),
                                    overwrite=True)
-
-    pickle.dump({'train': train_history, 'test': test_history},
-                open('acgan-history.pkl', 'wb'))
