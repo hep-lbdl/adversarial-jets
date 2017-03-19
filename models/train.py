@@ -15,7 +15,7 @@ except ImportError:
     import pickle
 
 import argparse
-
+import os
 from six.moves import range
 import sys
 
@@ -64,11 +64,11 @@ def get_parser():
                         help='Whether or not to use a progress bar')
 
     parser.add_argument('--d-pfx', action='store',
-                        defualt='params_discriminator_epoch_'
+                        default='params_discriminator_epoch_',
                         help='Default prefix for discriminator network weights')
 
     parser.add_argument('--g-pfx', action='store',
-                        defualt='params_generator_epoch_'
+                        default='params_generator_epoch_',
                         help='Default prefix for generator network weights')
 
     return parser
@@ -145,7 +145,7 @@ if __name__ == '__main__':
     # if we don't have the dataset, go fetch it from Zenodo, or re-find in the
     # Keras cache
     print('Loading data')
-    if not datafile or os.path.isfile(datafile):
+    if (datafile is None) or (not os.path.isfile(datafile)):
 
         from keras.utils.data_utils import get_file
 
