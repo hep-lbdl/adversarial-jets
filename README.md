@@ -1,4 +1,8 @@
 # Location-Aware Generative Adversarial Networks (LAGAN) for Physics Synthesis
+This repository contains all the code used in L. de Oliveira ([@lukedeo](https://github.com/lukedeo)), M. Paganini ([@mickypaganini](https://github.com/mickypaganini)), B. Nachman ([@bnachman](https://github.com/bnachman)), _Learning Particle Physics by Example: Location-Aware Generative Adversarial Networks for Physics Synthesis_ [[`arXiv:1701.05927`](https://arxiv.org/abs/1701.05927)]
+
+## Citations
+You are more than welcome to use the open data and open-source software provided here for any of your projects, but we kindly ask you that you please cite them using the DOIs provided below:
 
 | Asset  | Location |
 | ------------- | ------------- |
@@ -7,7 +11,21 @@
 | Model Weights  | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.400706.svg)](https://doi.org/10.5281/zenodo.400706) |
 | Docker image (generation) | [![](https://images.microbadger.com/badges/version/lukedeo/ji.svg)](https://hub.docker.com/r/lukedeo/ji/) |
 
-This repository contains all the code used in L. de Oliveira ([@lukedeo](https://github.com/lukedeo)), M. Paganini ([@mickypaganini](https://github.com/mickypaganini)), B. Nachman ([@bnachman](https://github.com/bnachman)), _Learning Particle Physics by Example: Location-Aware Generative Adversarial Networks for Physics Synthesis_ [[`arXiv:1701.05927`](https://arxiv.org/abs/1701.05927)]
+If you're using ideas or methods discussed in the paper, with or without using the software, please cite:
+```
+@article{lagan,
+      author         = "de Oliveira, Luke and Paganini, Michela and Nachman, Benjamin",
+      title          = "{Learning Particle Physics by Example: Location-Aware
+                        Generative Adversarial Networks for Physics Synthesis}",
+      year           = "2017",
+      eprint         = "1701.05927",
+      archivePrefix  = "arXiv",
+      primaryClass   = "stat.ML",
+      SLACcitation   = "%%CITATION = ARXIV:1701.05927;%%"
+}
+```
+
+## Getting Started
 
 To clone everything necessary, you'll need to run `git clone --recursive https://github.com/lukedeo/adversarial-jets` to fetch all the submodules (you can add a `-j6` or some other number to launch concurrent clones).
 
@@ -28,29 +46,3 @@ This folder contains the Keras models used for training the LAGAN seen in the pa
 This folder contains a jupyter nootbook that will guide you through the production of the plots that appear in the paper. You will be able to reproduce them and modify them as you wish using our trained models and open datasets, or reuse the plotting functions to visualize the performance of your own LAGAN.
 
 Simply run: ``jupyter notebook plots.ipynb``
-
-## Citations
-If you use code or part of the code in this repository, please cite:
-```
-@article{lagan_code,
-      title={lukedeo/adversarial-jets: Initial Release},
-      DOI={10.5281/zenodo.400708},
-      abstractNote={<p>Initial release of fully reproducible repository, with model weights available.</p>},
-      publisher={Zenodo},
-      author={Luke de Oliveira and Michela Paganini},
-      year={2017},
-      month={Mar}}
-```
-If you're using ideas or methods discussed in the paper, with or without using the software, please cite:
-```
-@article{lagan,
-      author         = "de Oliveira, Luke and Paganini, Michela and Nachman, Benjamin",
-      title          = "{Learning Particle Physics by Example: Location-Aware
-                        Generative Adversarial Networks for Physics Synthesis}",
-      year           = "2017",
-      eprint         = "1701.05927",
-      archivePrefix  = "arXiv",
-      primaryClass   = "stat.ML",
-      SLACcitation   = "%%CITATION = ARXIV:1701.05927;%%"
-}
-```
