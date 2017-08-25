@@ -28,3 +28,29 @@ This folder contains the Keras models used for training the LAGAN seen in the pa
 This folder contains a jupyter nootbook that will guide you through the production of the plots that appear in the paper. You will be able to reproduce them and modify them as you wish using our trained models and open datasets, or reuse the plotting functions to visualize the performance of your own LAGAN.
 
 Simply run: ``jupyter notebook plots.ipynb``
+
+## Citations
+If you use code or part of the code in this repository, please cite:
+```
+@article{lagan_code,
+      title={lukedeo/adversarial-jets: Initial Release},
+      DOI={10.5281/zenodo.400708},
+      abstractNote={<p>Initial release of fully reproducible repository, with model weights available.</p>},
+      publisher={Zenodo},
+      author={Luke de Oliveira and Michela Paganini},
+      year={2017},
+      month={Mar}}
+```
+If you're using ideas ideas or methods discussed in the paper, with or without using the software, please cite:
+```
+@article{lagan,
+      author         = "de Oliveira, Luke and Paganini, Michela and Nachman, Benjamin",
+      title          = "{Learning Particle Physics by Example: Location-Aware
+                        Generative Adversarial Networks for Physics Synthesis}",
+      year           = "2017",
+      eprint         = "1701.05927",
+      archivePrefix  = "arXiv",
+      primaryClass   = "stat.ML",
+      SLACcitation   = "%%CITATION = ARXIV:1701.05927;%%"
+}
+```
