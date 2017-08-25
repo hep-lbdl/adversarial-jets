@@ -41,7 +41,7 @@ If you use code or part of the code in this repository, please cite:
       year={2017},
       month={Mar}}
 ```
-If you're using ideas ideas or methods discussed in the paper, with or without using the software, please cite:
+If you're using ideas or methods discussed in the paper, with or without using the software, please cite:
 ```
 @article{lagan,
       author         = "de Oliveira, Luke and Paganini, Michela and Nachman, Benjamin",
